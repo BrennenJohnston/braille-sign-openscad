@@ -1,7 +1,7 @@
 // =============================================================================
 // Braille Sign STL Generator (OpenSCAD)
 // =============================================================================
-// VERSION = 1.0.0
+// VERSION = 1.0.1
 // License: PolyForm Noncommercial 1.0.0
 //          https://polyformproject.org/licenses/noncommercial/1.0.0
 //
@@ -259,6 +259,13 @@ braille_plate_h = (auto_fit_on && braille_rows > 0)
     ? max(braille_plate_height_mm, _braille_block_total_h + 2 * _plate_pad)
     : braille_plate_height_mm;
 
+// Space actually available to content once the raised border is deducted.
+// The overflow diagnostics below compare against these.
+_border_inset    = border_on ? border_width_mm : 0;
+_inner_w         = sign_w - 2 * _border_inset;
+_letter_inner_h  = letter_plate_h - 2 * _border_inset;
+_braille_inner_h = braille_plate_h - 2 * _border_inset;
+
 // Leaning-plate geometry (Angled mode; wedge-card technique). The braille
 // plate leans back at face_angle_deg; the reading face is the leaning edge
 // of length braille_plate_h.
@@ -268,6 +275,10 @@ bp_base_run = braille_plate_h * cos(face_angle_deg);
 // =============================================================================
 // HELPER FUNCTIONS
 // =============================================================================
+
+// One decimal place, for millimetre figures in console warnings. Raw floats
+// print as 47.32499999999999, which buries the number the reader needs.
+function mm1(v) = round(v * 10) / 10;
 
 // Uppercase ASCII a-z (703.2.2: characters shall be uppercase)
 function to_upper(s) =
@@ -559,20 +570,33 @@ module braille_plate_angled() {
 // =============================================================================
 // CONSOLE DIAGNOSTICS
 // =============================================================================
+// Each overflow warning reports the measured size against the space available,
+// matching the counted "TEXT TOO LONG: n/capacity" style the cylinder generator
+// uses. "Too tall" on its own leaves you guessing how much to add; the numbers
+// say it outright.
 echo(str("Braille sign: ", text_rows, " text line(s), ", braille_rows,
          " braille line(s), ", sign_w, " mm wide, plates ",
          letter_plate_h, " + ", braille_plate_h, " mm tall"));
-if (text_rows > 0 && _letter_block_h
-        > letter_plate_h - 2 * (border_on ? border_width_mm : 0))
-    echo("WARNING: the raised text block is taller than the letter plate. Turn on auto_fit, raise letter_plate_height_mm, or remove a line.");
-if (braille_rows > 0 && _braille_block_total_h
-        > braille_plate_h - 2 * (border_on ? border_width_mm : 0))
-    echo("WARNING: the braille block is taller than the braille plate. Turn on auto_fit, raise braille_plate_height_mm, or remove a line.");
-if (braille_max_len > 0 && _braille_block_total_w
-        > sign_w - 2 * (border_on ? border_width_mm : 0))
-    echo("WARNING: the braille block is wider than the sign. Turn on auto_fit, widen the sign, or shorten the line.");
-if (_est_text_w > sign_w - 2 * (border_on ? border_width_mm : 0))
-    echo("WARNING: a raised text line is probably wider than the sign. Turn on auto_fit, shorten the line, or widen the sign.");
+if (text_rows > 0 && _letter_block_h > _letter_inner_h)
+    echo(str("WARNING: TEXT TOO TALL: ", mm1(_letter_block_h), "/", mm1(_letter_inner_h),
+             " mm. The raised text block is taller than the letter plate's usable height. ",
+             "Turn on auto_fit, raise letter_plate_height_mm to at least ",
+             mm1(_letter_block_h + 2 * _border_inset), ", or remove a line."));
+if (braille_rows > 0 && _braille_block_total_h > _braille_inner_h)
+    echo(str("WARNING: BRAILLE TOO TALL: ", mm1(_braille_block_total_h), "/", mm1(_braille_inner_h),
+             " mm. The braille block is taller than the braille plate's usable height. ",
+             "Turn on auto_fit, raise braille_plate_height_mm to at least ",
+             mm1(_braille_block_total_h + 2 * _border_inset), ", or remove a line."));
+if (braille_max_len > 0 && _braille_block_total_w > _inner_w)
+    echo(str("WARNING: BRAILLE TOO WIDE: ", mm1(_braille_block_total_w), "/", mm1(_inner_w),
+             " mm (longest line is ", braille_max_len, " cells). ",
+             "Turn on auto_fit, raise sign_width_mm to at least ",
+             mm1(_braille_block_total_w + 2 * _border_inset), ", or shorten the line."));
+if (_est_text_w > _inner_w)
+    echo(str("WARNING: TEXT TOO WIDE: ", mm1(_est_text_w), "/", mm1(_inner_w),
+             " mm (estimated from character advances, so treat it as approximate). ",
+             "Turn on auto_fit, raise sign_width_mm to at least ",
+             mm1(_est_text_w + 2 * _border_inset), ", or shorten the line."));
 for (i = [0:_line_count-1])
     if (has_invalid_chars(_braille_lines[i]))
         echo(str("WARNING: braille Line_", i + 1, " contains non-braille characters. Use Unicode braille (U+2800-U+28FF)."));

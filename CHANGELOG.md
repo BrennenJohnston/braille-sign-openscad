@@ -5,6 +5,26 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-08-01
+
+### Changed
+
+- **Overflow warnings now report measured size against available space**, in the
+  counted style the sibling cylinder generator uses for `TEXT TOO LONG: n/capacity`.
+  The four warnings previously said only that something was too tall or too wide,
+  which told you a problem existed but not how big it was or how much to change —
+  so fixing it by hand meant guessing, rendering, and guessing again. They now
+  read e.g. `WARNING: BRAILLE TOO WIDE: 242.1/156 mm (longest line is 35 cells).
+  Turn on auto_fit, raise sign_width_mm to at least 246.1, or shorten the line.`
+  The thresholds themselves are unchanged, so nothing warns that did not warn
+  before; only the message is more useful. Geometry is untouched.
+- Added a `mm1()` helper so millimetre figures print to one decimal instead of
+  as raw floats like `47.32499999999999`, and hoisted the repeated
+  `border_on ? border_width_mm : 0` inset into named `_inner_w` /
+  `_letter_inner_h` / `_braille_inner_h` values shared by the checks and their
+  messages — the warning can no longer describe a different limit than the one
+  that triggered it.
+
 ## [1.0.0] - 2026-07-27
 
 First release as a standalone repository.
