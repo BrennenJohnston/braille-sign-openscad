@@ -156,12 +156,29 @@ Notes:
 
 - Customizer **`.json` presets do not upload** — MakerWorld only takes the
   `.scad`. The file's built-in defaults are the first-run experience there.
-- Invalid-character feedback appears **only in the console echo** on MakerWorld.
+- Invalid-character feedback goes to `echo()`, and MakerWorld's Parametric Model
+  Maker has **no visible OpenSCAD console** — so on MakerWorld that feedback is
+  not reachable. The quick start's troubleshooting section is written around the
+  visible symptom instead: an invalid character renders as a blank patch with no
+  dots.
 - **License choice at upload (owner decision):** this repository is under
   PolyForm Noncommercial 1.0.0, but MakerWorld requires choosing from its own
   license list (Creative Commons variants etc.), which does not offer PolyForm.
   Pick the closest match deliberately at upload time (e.g. a CC NonCommercial
   variant) — whatever is chosen governs the MakerWorld listing.
+
+### Release documentation
+
+- [`docs/MAKERWORLD_LISTING.md`](docs/MAKERWORLD_LISTING.md) — upload fields,
+  description body, print profile notes, gallery plan with alt text, and the
+  pre-publish checklist including the licensing gate and the ADA disclaimer.
+- [`docs/MAKERWORLD_QUICK_START.md`](docs/MAKERWORLD_QUICK_START.md) — the user
+  guide: what to include, Grade 2 translation, the customizer, the two-part
+  print workflow, the ADA §703 evidence, troubleshooting, and the OpenSCAD
+  Assistive Forge alternative.
+
+Both are written to the shared
+[Accessible MakerWorld Documentation Standard](https://github.com/BrennenJohnston/accessible-makerworld-doc-standard/blob/main/ACCESSIBLE_MAKERWORLD_DOC_STANDARD.md).
 
 ## Development / tests
 
