@@ -133,32 +133,32 @@ letter_line_spacing_pct = 135; // [100:5:200]
 letter_spacing_factor = 1.1;  // [0.8:0.05:2]
 
 /* [Advanced - Braille spacing, ADA 703.3] */
-// Center-to-center distance between braille cells (mm). ADA 703.3.1 asks 6.1 to 7.6.
-braille_cell_spacing_mm = 7.0; // [2:0.01:15]
+// Center-to-center distance between braille cells (mm). ADA 703.3.1 asks 6.1 to 7.6; 6.5 is inside ISO 17049 too.
+braille_cell_spacing_mm = 6.5; // [6.1:0.1:7.6]
 // Center-to-center distance between braille lines (mm). ADA 703.3.1 asks 10.0 to 10.2.
-braille_line_spacing_mm = 10.0; // [5:0.01:25]
+braille_line_spacing_mm = 10.0; // [10.0:0.1:10.2]
 // Center-to-center distance between the dots of one cell (mm). ADA 703.3.1 asks 2.3 to 2.5.
-braille_dot_spacing_mm = 2.5; // [1:0.01:5]
+braille_dot_spacing_mm = 2.5; // [2.3:0.1:2.5]
 // Clear space between the braille and the border rail or plate edge (mm). ADA 703.3.2 asks 9.5 mm (3/8 in) or more.
 braille_clearance_mm = 9.5;   // [9.5:0.5:20]
 
 /* [Advanced - Braille dot shape] */
-// A rounded dome dot, the ADA profile (Rounded), or a pointed dot with a flat top (Cone).
+// Rounded is the domed dot ADA 703.3.1 asks for. Cone is a pointed dot with a flat top, not the ADA shape: use it only if Rounded prints badly.
 dot_shape = "Rounded";        // [Rounded, Cone]
 // Rounded dots: diameter where the dot meets the plate (mm). ADA 703.3.1 asks 1.5 to 1.6.
-rounded_dot_base_diameter = 1.6; // [0.5:0.01:3]
-// Rounded dots: height of the base below the dome (mm). Base plus dome height is the dot height.
-rounded_dot_base_height   = 0.35; // [0:0.01:2]
-// Rounded dots: diameter of the dome where it sits on the base (mm). Keep it no wider than the base.
-rounded_dot_dome_diameter = 1.4; // [0.5:0.01:3]
-// Rounded dots: height of the dome (mm). ADA 703.3.1 asks 0.6 to 0.9 mm for the whole dot.
-rounded_dot_dome_height   = 0.35; // [0.1:0.01:2]
+rounded_dot_base_diameter = 1.6; // [1.5:0.01:1.6]
+// Rounded dots: height of the base below the dome (mm). Base plus dome must total 0.6 to 0.9, the ADA 703.3.1 dot height.
+rounded_dot_base_height   = 0.35; // [0.1:0.01:0.5]
+// Rounded dots: diameter of the dome where it sits on the base (mm). It may not be wider than the base.
+rounded_dot_dome_diameter = 1.4; // [1.0:0.01:1.6]
+// Rounded dots: height of the dome (mm). Base plus dome must total 0.6 to 0.9, the ADA 703.3.1 dot height.
+rounded_dot_dome_height   = 0.35; // [0.2:0.01:0.8]
 // Cone dots: diameter where the dot meets the plate (mm). ADA 703.3.1 asks 1.5 to 1.6.
-cone_dot_base_diameter = 1.5; // [0.5:0.01:3]
+cone_dot_base_diameter = 1.5; // [1.5:0.01:1.6]
 // Cone dots: height of the dot (mm). ADA 703.3.1 asks 0.6 to 0.9.
-cone_dot_height        = 0.8; // [0.3:0.01:2]
-// Cone dots: diameter of the small flat top (mm).
-cone_dot_top_diameter  = 0.4; // [0.1:0.01:2]
+cone_dot_height        = 0.8; // [0.6:0.01:0.9]
+// Cone dots: diameter of the small flat top (mm). It must be smaller than the base.
+cone_dot_top_diameter  = 0.4; // [0.3:0.01:1.0]
 
 /* [Advanced - Braille plate lean and support fins] */
 // Angle between the braille plate and the bed in Angled mode (degrees). 75 to 90 reads best; 75 needs no slicer supports.
@@ -288,7 +288,37 @@ braille_max_len = max([for (l = _braille_lines) len(l)]);
 braille_block_w = braille_max_len <= 1 ? 0 : (braille_max_len - 1) * braille_cell_spacing_mm;
 braille_block_h = braille_rows  <= 1 ? 0 : (braille_rows - 1) * braille_line_spacing_mm;
 
+// The sliders above hold the tactile dials to ADA 703.3, but a -D value or a
+// preset skips a slider and OpenSCAD does not check one, so these stop the
+// render instead of printing unreadable braille.
 assert(braille_clearance_mm >= 9.5, "braille_clearance_mm is below the ADA 703.3.2 minimum of 9.5 mm");
+assert(rounded_dot_base_diameter >= 1.5 && rounded_dot_base_diameter <= 1.6,
+       "rounded_dot_base_diameter must be 1.5 to 1.6 mm (ADA 703.3.1 dot base diameter)");
+assert(rounded_dot_dome_diameter >= 1.0 && rounded_dot_dome_diameter <= 1.6,
+       "rounded_dot_dome_diameter must be 1.0 to 1.6 mm");
+assert(rounded_dot_base_height >= 0.1 && rounded_dot_base_height <= 0.5,
+       "rounded_dot_base_height must be 0.1 to 0.5 mm");
+assert(rounded_dot_dome_height >= 0.2 && rounded_dot_dome_height <= 0.8,
+       "rounded_dot_dome_height must be 0.2 to 0.8 mm");
+assert(cone_dot_base_diameter >= 1.5 && cone_dot_base_diameter <= 1.6,
+       "cone_dot_base_diameter must be 1.5 to 1.6 mm (ADA 703.3.1 dot base diameter)");
+assert(cone_dot_height >= 0.6 && cone_dot_height <= 0.9,
+       "cone_dot_height must be 0.6 to 0.9 mm (ADA 703.3.1 dot height)");
+assert(cone_dot_top_diameter >= 0.3 && cone_dot_top_diameter <= 1.0,
+       "cone_dot_top_diameter must be 0.3 to 1.0 mm");
+assert(braille_dot_spacing_mm >= 2.3 && braille_dot_spacing_mm <= 2.5,
+       "braille_dot_spacing_mm must be 2.3 to 2.5 mm (ADA 703.3.1)");
+assert(braille_cell_spacing_mm >= 6.1 && braille_cell_spacing_mm <= 7.6,
+       "braille_cell_spacing_mm must be 6.1 to 7.6 mm (ADA 703.3.1)");
+assert(braille_line_spacing_mm >= 10.0 && braille_line_spacing_mm <= 10.2,
+       "braille_line_spacing_mm must be 10.0 to 10.2 mm (ADA 703.3.1)");
+assert(rounded_dot_base_height + rounded_dot_dome_height >= 0.6
+       && rounded_dot_base_height + rounded_dot_dome_height <= 0.9,
+       "rounded dot total height must be 0.6 to 0.9 mm (ADA 703.3.1 dot height)");
+assert(rounded_dot_dome_diameter <= rounded_dot_base_diameter,
+       "rounded_dot_dome_diameter must not exceed rounded_dot_base_diameter");
+assert(cone_dot_top_diameter < cone_dot_base_diameter,
+       "cone_dot_top_diameter must be smaller than cone_dot_base_diameter");
 
 // Effective sign size. In auto-fit mode (default) the plates grow so every
 // row of letters, braille dots, and the plate heights always fit.
