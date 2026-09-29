@@ -1,0 +1,97 @@
+# Open Know-How (OKH) manifest for the Braille Sign STL Generator
+# Follows the Open Know-How Specification (Internet of Production Alliance, 2022)
+# Spec: https://standards.internetofproduction.org/pub/okh
+# Field set copied from the Plug Puller's manifest, with this model's own paths.
+
+okhv: OKH-LOSHv1.0
+
+name: "Braille Sign STL Generator: two-part tactile signs with raised letters and braille"
+repo: https://github.com/BrennenJohnston/braille-sign-openscad
+version: 1.0.1
+license:
+  hardware: PolyForm-Noncommercial-1.0.0
+  documentation: PolyForm-Noncommercial-1.0.0
+  software: PolyForm-Noncommercial-1.0.0
+licensor:
+  name: Brennen Johnston
+documentation-language: en-US
+date-created: 2026-07-27
+date-updated: 2026-09-28
+function: |
+  A parametric OpenSCAD generator for two-part tactile signs: a plate of raised uppercase
+  letters above a plate of the same wording in braille, following the 2010 ADA Standards
+  (section 703) recommendations. It is for anyone who needs a room sign that reads by touch
+  as well as by sight, and for the makers who print them. The letter plate prints flat and
+  the braille plate prints leaning back at 75 degrees on break-away fins, because braille
+  printed at 75 to 90 degrees reads faster and more comfortably than flat-printed braille;
+  mounted touching, the two plates' split borders join into one frame. Type the wording and paste its Unicode braille into the OpenSCAD Customizer, or pick
+  one of the sample signs, and the plates grow to fit; checks in the file hold the braille
+  dots and spacing to the ADA figures, and problems show as text beside the sign in the
+  preview. Ready-to-print STLs cover the Restroom, Exit, Stairs and Room 101 samples.
+
+# The two readiness levels are the owner's claim, to confirm before submitting.
+documentation-readiness-level: ODRL-3
+technology-readiness-level: OTRL-4
+
+documentation-home: https://github.com/BrennenJohnston/braille-sign-openscad#readme
+archive-download: https://github.com/BrennenJohnston/braille-sign-openscad/releases
+
+bom: ./docs/guides/bom.md
+making-instructions:
+  - path: ./docs/guides/maker-guide.md
+    title: Choose a way, prepare the wording, customize, print, mount, check
+  - path: ./docs/guides/quick-start.md
+    title: The whole path on one page
+operation-instructions:
+  - path: ./docs/guides/user-guide.md
+    title: Who the sign is for, where it goes, reading it, care and limits
+user-manual: ./docs/guides/user-guide.md
+manufacturing-instructions: ./docs/guides/maker-guide.md
+
+design-files:
+  - path: ./Braille_Sign_STL_Generator.scad
+    title: The generator (OpenSCAD, parametric, one self-contained file)
+
+manufacturing-files:
+  - path: ./stl/
+    title: Ready-to-print letter and braille plates for the four sample signs
+
+tool-list:
+  - A 3D printer with a bed at least 170 mm wide for the default sign
+  - PLA or PETG filament
+  - Double-sided mounting tape or adhesive strips
+  - Paint or a second filament for contrast (optional)
+  - Calipers (optional)
+
+software:
+  - name: OpenSCAD
+    version: "2026.01.03 nightly (2021.01 or later works)"
+    url: https://openscad.org/
+
+image: ./docs/images/sign-default-three-quarter.png
+
+keywords:
+  - braille
+  - accessibility
+  - assistive-technology
+  - tactile-sign
+  - ada
+  - openscad
+  - parametric
+  - 3d-printable
+  - customizer
+  - openat
+
+attestation:
+  - Rendered and checked by the repository's tests; a test print of this version by the designer is pending; no third-party certification has been performed.
+
+related:
+  - name: OpenAT-Template
+    url: https://github.com/makersmakingchange/OpenAT-Template
+    relation: documentation and repository structure follows this template
+  - name: Accessible MakerWorld Documentation Standard
+    url: https://github.com/BrennenJohnston/accessible-makerworld-doc-standard
+    relation: the documentation is written to this standard
+  - name: OpenSCAD Assistive Forge
+    url: https://github.com/BrennenJohnston/openscad-assistive-forge
+    relation: an accessibility-first browser customizer that runs this generator and translates the braille

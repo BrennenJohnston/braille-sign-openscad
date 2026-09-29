@@ -72,11 +72,10 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r tests/requirements.txt
 
-      - name: Run Customizer validation tests
-        run: pytest tests/test_customizer.py -v
-
-      - name: Run source guard tests
-        run: pytest tests/test_source_guards.py -v
+      # Every test that needs no OpenSCAD, the docs gate included, so a new
+      # test file runs in CI without an edit here.
+      - name: Run quick tests
+        run: pytest tests -m "not requires_openscad" -v
 
   # ==========================================================================
   # Job 3: Render Smoke Tests (OpenSCAD)
