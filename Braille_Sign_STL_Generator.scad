@@ -11,10 +11,10 @@
 //    sans-serif), uppercase by default, 16 mm character height (5/8 in
 //    minimum per 703.2.5), raised 0.8 mm (1/32 in per 703.2.1), 135% line
 //    spacing. Prints flat, letters up.
-//  • BRAILLE PLATE (bottom): the same text in braille (paste Unicode
-//    braille into Line_1..Line_6). Prints leaning back at face_angle_deg
-//    with break-away support fins by default (the wedge-card technique,
-//    crispest dots), or Flat.
+//  • BRAILLE PLATE (bottom): the same text in braille (a sample sign's own,
+//    or Unicode braille pasted into braille_line_1..braille_line_6). Prints
+//    leaning back at face_angle_deg with break-away support fins by default
+//    (the wedge-card technique, crispest dots), or Flat.
 //
 // SPLIT RAISED BORDER: the letter plate carries the top + side border
 // segments and the braille plate carries the bottom + side segments, so
@@ -29,21 +29,28 @@
 // against the standard before installing.
 //
 // =============================================================================
-// HOW TO USE
+// HOW TO USE: the four Steps at the top of the Customizer
 // =============================================================================
-//  1. Type the sign wording into sign_text_1..sign_text_6 (regular text —
-//     it becomes the raised letters).
-//  2. Translate the same wording at https://www.branah.com/braille-translator
-//     (Grade 1 or Grade 2, Unicode Braille output — NOT ASCII Braille) and
-//     paste the braille into Line_1..Line_6.
-//  3. Leave auto_fit = Yes (the default) and the plates grow so every row of
-//     letters and braille fits; the effective size is reported in the console.
-//  4. Pick sign_part: Both prints the two plates side by side; Letter plate /
-//     Braille plate export one plate at a time.
-//  5. print_orientation Angled (default) leans the braille plate back with
-//     break-away support fins (crispest dots); Flat prints it dots-up.
-//  6. Render (F6) → File → Export → STL. Print as modeled — no slicer
-//     supports needed.
+//  Step 1 - Pick a sample sign or type your own: pick Restroom, Exit,
+//     Stairs or Room 101 under sample_sign, or leave it on Type my own and
+//     type your wording into text_line_1..text_line_6 (it becomes the raised
+//     letters).
+//  Step 2 - Braille, pasted from a translator: for your own wording,
+//     translate each line (for example at
+//     https://www.branah.com/braille-translator, Unicode braille output, not
+//     ASCII braille) and paste it into the matching braille_line_N. A sample
+//     sign brings its own braille, so skip this Step. An automatic translator
+//     is not a certified transcriber: have a sign for a public building
+//     checked.
+//  Step 3 - What to export: sign_part Both lays the two plates side by side;
+//     Letter plate or Braille plate exports one plate at a time.
+//     print_orientation Angled (the default) leans the braille plate back
+//     with break-away fins for the crispest dots; Flat prints it dots up.
+//  Step 4 - Size: leave auto_fit on Yes and the plates grow so every line of
+//     letters and braille fits; the size dials are then minimums, and the
+//     size is reported in the console.
+//  Then render (F6) and export (File > Export > STL). Print as modeled: no
+//  slicer supports needed. Every tab after Step 4 starts with "Advanced".
 //
 // Lineage: the braille dot system is adapted from the Braille Wedge Card STL
 // Generator by Brennen Johnston
@@ -55,136 +62,133 @@
 // https://github.com/BrennenJohnston/braille-sign-openscad
 // =============================================================================
 
-/* [Sign Text - Raised Letters] */
-// First line of raised text
-sign_text_1 = "Room 101";
-// Second line of raised text
-sign_text_2 = "";
-// Third line of raised text
-sign_text_3 = "";
-// Fourth line of raised text
-sign_text_4 = "";
-// Fifth line of raised text
-sign_text_5 = "";
-// Sixth line of raised text
-sign_text_6 = "";
+/* [Step 1 - Pick a sample sign or type your own] */
+// Pick a ready-made sign, or Type my own to use your wording below. A sample ignores the text and braille lines.
+sample_sign = "Type my own"; // [Type my own, Restroom, Exit, Stairs, Room 101]
+// Line 1 of your wording, as raised letters. Used when sample_sign is Type my own.
+text_line_1 = "Room 101";
+// Line 2 of your wording. Leave it empty if the sign has fewer lines.
+text_line_2 = "";
+// Line 3 of your wording. Leave it empty if the sign has fewer lines.
+text_line_3 = "";
+// Line 4 of your wording. Leave it empty if the sign has fewer lines.
+text_line_4 = "";
+// Line 5 of your wording. Leave it empty if the sign has fewer lines.
+text_line_5 = "";
+// Line 6 of your wording. Leave it empty if the sign has fewer lines.
+text_line_6 = "";
 
-/* [Text Input - Pre-Translated Braille] */
-// Braille for line 1 (Unicode braille, e.g. from branah.com/braille-translator)
-Line_1 = "⠠⠗⠕⠕⠍⠀⠼⠁⠚⠁";
-// Braille for line 2
-Line_2 = "";
-// Braille for line 3
-Line_3 = "";
-// Braille for line 4
-Line_4 = "";
-// Braille for line 5
-Line_5 = "";
-// Braille for line 6
-Line_6 = "";
+/* [Step 2 - Braille, pasted from a translator] */
+// Braille for text line 1, pasted from a translator as Unicode braille dots, not ASCII letters.
+braille_line_1 = "⠠⠗⠕⠕⠍⠀⠼⠁⠚⠁";
+// Braille for text line 2. Leave it empty when text line 2 is empty.
+braille_line_2 = "";
+// Braille for text line 3. Leave it empty when text line 3 is empty.
+braille_line_3 = "";
+// Braille for text line 4. Leave it empty when text line 4 is empty.
+braille_line_4 = "";
+// Braille for text line 5. Leave it empty when text line 5 is empty.
+braille_line_5 = "";
+// Braille for text line 6. Leave it empty when text line 6 is empty.
+braille_line_6 = "";
 
-/* [Sign Layout] */
-// Which part(s) to render. Both lays the two plates side by side on the bed.
-sign_part = "Both"; // [Both, Letter plate, Braille plate]
-// Grow the sign automatically so every row of letters and braille fits (Yes), or keep the exact size below (No)
+/* [Step 3 - What to export] */
+// Which plate to export. Both lays the two plates side by side on the bed.
+sign_part = "Both";           // [Both, Letter plate, Braille plate]
+// Lean the braille plate back for the crispest dots (Angled) or print it flat (Flat). The letter plate always prints flat.
+print_orientation = "Angled"; // [Angled, Flat]
+
+/* [Step 4 - Size] */
+// Grow the plates so every line fits (Yes), or keep the exact sizes below (No).
 auto_fit = "Yes";             // [Yes, No]
-// Width of the sign / both plates (mm). With auto_fit on this is the minimum.
+// Width of both plates (mm). When auto_fit is Yes, this is the minimum.
 sign_width_mm = 160;          // [60:1:300]
-// Height of the letter plate (mm). With auto_fit on this is the minimum.
+// Height of the letter plate (mm). When auto_fit is Yes, this is the minimum.
 letter_plate_height_mm = 70;  // [30:1:200]
-// Height of the braille plate (mm). With auto_fit on this is the minimum.
+// Height of the braille plate (mm). When auto_fit is Yes, this is the minimum.
 braille_plate_height_mm = 40; // [25:1:150]
-// Thickness of both plates (mm)
+
+/* [Advanced - Plates and border] */
+// Thickness of both plates, not counting the raised letters, dots or border (mm).
 plate_thickness_mm = 3;       // [2:0.5:8]
-// Gap between the two plates on the print bed in Both mode (mm)
-part_gap_mm = 8;              // [2:1:30]
-
-/* [Raised Lettering - ADA 703] */
-// Convert the raised text to uppercase (703.2.2 requires uppercase characters)
-force_uppercase = "Yes";      // [Yes, No]
-// Character height (mm). 703.2.5 minimum is 15.9 mm (5/8 in).
-char_height_mm = 16;          // [12:0.5:50]
-// How far the characters rise off the plate (mm). 703.2.1 minimum is 0.8 mm (1/32 in).
-letter_raise_mm = 0.8;        // [0.4:0.05:2]
-// Line spacing as a percentage of character height (703.2.8: 135%)
-line_spacing_pct = 135;       // [100:5:200]
-// Character spacing multiplier (>1 spreads characters; 703.2.8 needs clear space between)
-letter_spacing = 1.1;         // [0.8:0.05:2]
-
-/* [Border] */
-// Raised split border: top + sides on the letter plate, bottom + sides on the braille plate
-add_border = "yes";           // [yes, no]
-// Border width (mm)
+// Space between the two plates on the print bed when sign_part is Both (mm).
+plate_gap_mm = 8;             // [2:1:30]
+// Add the raised frame: top and sides on the letter plate, bottom and sides on the braille plate.
+add_border = "Yes";           // [Yes, No]
+// Width of the raised border rails (mm).
 border_width_mm = 2;          // [0.5:0.5:6]
-// Border height above the plate face (mm)
+// How far the border rises above the plate face (mm).
 border_height_mm = 0.8;       // [0.2:0.1:2]
 
-/* [Braille Plate Orientation] */
-// Angled (default) = the plate leans back at face_angle_deg with
-// break-away support fins (best dot quality, like the wedge card).
-// Flat = dots face up on the bed. The letter plate always prints flat.
-print_orientation = "Angled"; // [Flat, Angled]
-// Face angle from the horizontal bed (deg) in Angled mode. 75 = CHI sweet spot.
-face_angle_deg = 75;          // [60:1:90]
+/* [Advanced - Raised letters, ADA 703.2] */
+// Turn a to z into capital letters, as ADA 703.2.2 asks. Accented letters stay as typed.
+force_uppercase = "Yes";      // [Yes, No]
+// Height of the raised capital letters (mm). ADA 703.2.5 asks 15.9 mm (5/8 in) or more.
+letter_height_mm = 16;        // [12:0.5:50]
+// How far the letters rise off the plate (mm). ADA 703.2.1 asks 0.8 mm (1/32 in) or more.
+letter_raise_mm = 0.8;        // [0.4:0.05:2]
+// Baseline-to-baseline spacing of the letter lines, as a percent of the letter height (percent). ADA 703.2.8 asks 135 to 170.
+letter_line_spacing_pct = 135; // [100:5:200]
+// Spreads or tightens the letters. 1 is the font's own spacing; 1.1 adds a little air.
+letter_spacing_factor = 1.1;  // [0.8:0.05:2]
 
-/* [Support Fins (Angled)] */
-// Break-away support fins behind the leaning braille plate (Angled mode only)
-support_fins = "On";          // [On, Off]
-// Spacing between fins across the plate width (mm); edge fins are always added
+/* [Advanced - Braille spacing, ADA 703.3] */
+// Center-to-center distance between braille cells (mm). ADA 703.3.1 asks 6.1 to 7.6.
+braille_cell_spacing_mm = 7.0; // [2:0.01:15]
+// Center-to-center distance between braille lines (mm). ADA 703.3.1 asks 10.0 to 10.2.
+braille_line_spacing_mm = 10.0; // [5:0.01:25]
+// Center-to-center distance between the dots of one cell (mm). ADA 703.3.1 asks 2.3 to 2.5.
+braille_dot_spacing_mm = 2.5; // [1:0.01:5]
+
+/* [Advanced - Braille dot shape] */
+// A rounded dome dot, the ADA profile (Rounded), or a pointed dot with a flat top (Cone).
+dot_shape = "Rounded";        // [Rounded, Cone]
+// Rounded dots: diameter where the dot meets the plate (mm). ADA 703.3.1 asks 1.5 to 1.6.
+rounded_dot_base_diameter = 1.6; // [0.5:0.01:3]
+// Rounded dots: height of the base below the dome (mm). Base plus dome height is the dot height.
+rounded_dot_base_height   = 0.35; // [0:0.01:2]
+// Rounded dots: diameter of the dome where it sits on the base (mm). Keep it no wider than the base.
+rounded_dot_dome_diameter = 1.4; // [0.5:0.01:3]
+// Rounded dots: height of the dome (mm). ADA 703.3.1 asks 0.6 to 0.9 mm for the whole dot.
+rounded_dot_dome_height   = 0.35; // [0.1:0.01:2]
+// Cone dots: diameter where the dot meets the plate (mm). ADA 703.3.1 asks 1.5 to 1.6.
+cone_dot_base_diameter = 1.5; // [0.5:0.01:3]
+// Cone dots: height of the dot (mm). ADA 703.3.1 asks 0.6 to 0.9.
+cone_dot_height        = 0.8; // [0.3:0.01:2]
+// Cone dots: diameter of the small flat top (mm).
+cone_dot_top_diameter  = 0.4; // [0.1:0.01:2]
+
+/* [Advanced - Braille plate lean and support fins] */
+// Angle between the braille plate and the bed in Angled mode (degrees). 75 to 90 reads best; 75 needs no slicer supports.
+face_angle_deg = 75;          // [60:1:90]
+// Add break-away fins behind the leaning braille plate so it prints without slicer supports (Angled only).
+support_fins = "Yes";         // [Yes, No]
+// Space between fins across the plate width; a fin is always added at each end (mm).
 fin_interval_mm = 25;         // [1:0.5:200]
-// Horizontal gap between the plate's back face and the fins (mm)
+// Gap between the back of the leaning plate and the fins (mm).
 fin_offset_mm = 1.0;          // [0.2:0.05:10]
-// Fin prism thickness along X (mm)
+// Thickness of each fin (mm).
 fin_thickness_mm = 1.2;       // [0.2:0.05:10]
-// Fin height as a fraction of the leaning plate height
+// Fin height as a fraction of the plate height, 1 is full height.
 fin_height_frac = 1.0;        // [0.05:0.01:1]
-// Number of break-away bridges up each fin
+// Number of small break-away bridges joining each fin to the plate.
 bridge_count = 4;             // [1:1:60]
-// Bridge size along X (mm)
+// Width of each bridge, measured across the plate (mm).
 bridge_width_mm = 0.5;        // [0.2:0.05:8]
-// Bridge size along Z (mm)
+// Height of each bridge (mm).
 bridge_height_mm = 0.5;       // [0.2:0.05:8]
-// How far each bridge merges into the plate back face (mm; 0.3-0.4 snaps clean)
+// How far each bridge reaches into the back of the plate (mm). 0.3 to 0.4 snaps off clean.
 bridge_contact_mm = 0.3;      // [0.1:0.05:3]
-// Built-in brim flange width around each fin base (mm; 0 = no brim)
+// Width of the brim around the foot of each fin; 0 turns the brims off (mm).
 brim_width_mm = 2.0;          // [0:0.25:25]
-// Brim layer thickness (mm, ~1-2 layers)
+// Thickness of the fin brims, about one or two printed layers (mm).
 brim_thickness_mm = 0.2;      // [0.1:0.05:3]
 
-/* [Braille Dot Shape] */
-// Shape of the raised braille dots. Rounded matches the ADA dome profile.
-dot_shape = "Rounded";        // [Rounded, Cone]
-// Horizontal spacing between cells (mm)
-cell_spacing = 7.0;           // [2:0.01:15]
-// Vertical spacing between braille lines (mm)
-line_spacing = 10.0;          // [5:0.01:25]
-// Spacing between dots within a cell (mm)
-dot_spacing = 2.5;            // [1:0.01:5]
-
-/* [Braille Dot Shape - Rounded] */
-// Defaults stay ADA-legal: base_height + dome_height <= 0.9 mm, 1.6 mm base.
-// Rounded dot base diameter (mm)
-rounded_dot_base_diameter = 1.6; // [0.5:0.01:3]
-// Rounded dot base height (mm)
-rounded_dot_base_height   = 0.35; // [0:0.01:2]
-// Rounded dome diameter (mm)
-rounded_dot_dome_diameter = 1.4; // [0.5:0.01:3]
-// Rounded dot dome height (mm)
-rounded_dot_dome_height   = 0.35; // [0.1:0.01:2]
-
-/* [Braille Dot Shape - Cone] */
-// Cone dot base diameter (mm)
-cone_dot_base_diameter = 1.5; // [0.5:0.01:3]
-// Cone dot height (mm)
-cone_dot_height        = 0.8; // [0.3:0.01:2]
-// Cone dot flat hat diameter (mm)
-cone_dot_flat_hat      = 0.4; // [0.1:0.01:2]
-
-/* [Rendering Quality] */
-// Sphere quality for rounded shapes
+/* [Advanced - Warnings and rendering] */
+// How smooth the rounded dot domes are. High is smoother but renders slower.
 render_quality = "Medium";    // [Low, Medium, High]
-// Number of segments for cone shapes
-cone_segments = 40;           // [8:1:64]
+// How many flat sides draw each dot's round outline, for both dot shapes. Higher is smoother and slower.
+dot_segments = 40;            // [8:1:64]
 
 /* [Hidden] */
 $fn = 32;
@@ -195,8 +199,8 @@ $fn = 32;
 
 use_rounded_dots = (dot_shape == "Rounded");
 angled_on = (print_orientation == "Angled");
-fins_on = angled_on && ((support_fins == "On") || (support_fins == true));
-border_on = (add_border == "yes");
+fins_on = angled_on && ((support_fins == "Yes") || (support_fins == true));
+border_on = (add_border == "Yes");
 uppercase_on = (force_uppercase == "Yes");
 
 show_letter_plate  = (sign_part == "Both") || (sign_part == "Letter plate");
@@ -206,10 +210,33 @@ quality_fn = (render_quality == "Low")    ? 24 :
              (render_quality == "Medium") ? 32 :
              (render_quality == "High")   ? 64 : 32;
 
+// Sample signs for the sample_sign dial. Copied from scripts/sample_signs.json,
+// which scripts/generate_sample_braille.mjs writes with liblouis (UEB Grade 2):
+// regenerate and copy, never hand-edit the braille. Padded to six lines so
+// every loop below walks the same rows as a typed sign.
+SAMPLE_NAMES = ["Restroom", "Exit", "Stairs", "Room 101"];
+SAMPLE_TEXT = [
+    ["Restroom", "", "", "", "", ""],
+    ["Exit", "", "", "", "", ""],
+    ["Stairs", "", "", "", "", ""],
+    ["Room 101", "", "", "", "", ""]
+];
+SAMPLE_BRAILLE = [
+    ["⠗⠑⠌⠗⠕⠕⠍", "", "", "", "", ""],
+    ["⠑⠭⠊⠞", "", "", "", "", ""],
+    ["⠌⠁⠊⠗⠎", "", "", "", "", ""],
+    ["⠗⠕⠕⠍⠀⠼⠁⠚⠁", "", "", "", "", ""]
+];
+_sample_idx = search([sample_sign], SAMPLE_NAMES)[0];
+_sample_on = (sample_sign != "Type my own") && (_sample_idx != []);
+
 // Text content metrics
-_text_lines = [sign_text_1, sign_text_2, sign_text_3,
-               sign_text_4, sign_text_5, sign_text_6];
-_braille_lines = [Line_1, Line_2, Line_3, Line_4, Line_5, Line_6];
+_text_lines = _sample_on ? SAMPLE_TEXT[_sample_idx]
+    : [text_line_1, text_line_2, text_line_3,
+       text_line_4, text_line_5, text_line_6];
+_braille_lines = _sample_on ? SAMPLE_BRAILLE[_sample_idx]
+    : [braille_line_1, braille_line_2, braille_line_3,
+       braille_line_4, braille_line_5, braille_line_6];
 _line_count = len(_text_lines);
 _text_nonempty = [for (i = [0:_line_count-1]) if (len(_text_lines[i]) > 0) i];
 _braille_nonempty = [for (i = [0:_line_count-1]) if (len(_braille_lines[i]) > 0) i];
@@ -217,7 +244,7 @@ text_rows    = len(_text_nonempty) == 0 ? 0 : _text_nonempty[len(_text_nonempty)
 braille_rows = len(_braille_nonempty) == 0 ? 0 : _braille_nonempty[len(_braille_nonempty) - 1] + 1;
 
 // Letter layout
-text_line_pitch = char_height_mm * line_spacing_pct / 100;
+text_line_pitch = letter_height_mm * letter_line_spacing_pct / 100;
 
 // Braille dot metrics
 dot_total_height = use_rounded_dots
@@ -227,8 +254,8 @@ DOT_FACE_EMBED = 0.02;
 
 // Braille block extent (centre-to-centre) on the braille plate
 braille_max_len = max([for (l = _braille_lines) len(l)]);
-braille_block_w = braille_max_len <= 1 ? 0 : (braille_max_len - 1) * cell_spacing;
-braille_block_h = braille_rows  <= 1 ? 0 : (braille_rows - 1) * line_spacing;
+braille_block_w = braille_max_len <= 1 ? 0 : (braille_max_len - 1) * braille_cell_spacing_mm;
+braille_block_h = braille_rows  <= 1 ? 0 : (braille_rows - 1) * braille_line_spacing_mm;
 
 // Effective sign size. In auto-fit mode (default) the plates grow so every
 // row of letters, braille dots, and the plate heights always fit.
@@ -241,20 +268,20 @@ _dot_base_d = (dot_shape == "Rounded")
 CHAR_ADVANCE_FACTOR = 0.94;
 _est_text_w = text_rows == 0 ? 0
     : max([for (l = _text_lines) len(display_text(l))])
-      * char_height_mm * CHAR_ADVANCE_FACTOR * letter_spacing;
+      * letter_height_mm * CHAR_ADVANCE_FACTOR * letter_spacing_factor;
 _braille_block_total_w = braille_max_len == 0 ? 0
-    : braille_block_w + dot_spacing + _dot_base_d;
+    : braille_block_w + braille_dot_spacing_mm + _dot_base_d;
 sign_w = auto_fit_on
     ? max(sign_width_mm, _est_text_w + 2 * _plate_pad,
           _braille_block_total_w + 2 * _plate_pad)
     : sign_width_mm;
 _letter_block_h = text_rows == 0 ? 0
-    : (text_rows - 1) * text_line_pitch + char_height_mm;
+    : (text_rows - 1) * text_line_pitch + letter_height_mm;
 letter_plate_h = (auto_fit_on && text_rows > 0)
     ? max(letter_plate_height_mm, _letter_block_h + 2 * _plate_pad)
     : letter_plate_height_mm;
 _braille_block_total_h = braille_rows == 0 ? 0
-    : braille_block_h + 2 * dot_spacing + _dot_base_d;
+    : braille_block_h + 2 * braille_dot_spacing_mm + _dot_base_d;
 braille_plate_h = (auto_fit_on && braille_rows > 0)
     ? max(braille_plate_height_mm, _braille_block_total_h + 2 * _plate_pad)
     : braille_plate_height_mm;
@@ -308,8 +335,8 @@ function get_dot_pattern(char) =
     : [0, 0, 0, 0, 0, 0];
 
 // Dot offsets in a flat face frame (+X = reading direction, +Y = up)
-dot_col_x_offsets = [-dot_spacing / 2, +dot_spacing / 2];
-dot_row_y_offsets = [+dot_spacing, 0, -dot_spacing];
+dot_col_x_offsets = [-braille_dot_spacing_mm / 2, +braille_dot_spacing_mm / 2];
+dot_row_y_offsets = [+braille_dot_spacing_mm, 0, -braille_dot_spacing_mm];
 dot_positions     = [[0, 0], [1, 0], [2, 0], [0, 1], [1, 1], [2, 1]];
 
 // =============================================================================
@@ -330,7 +357,7 @@ module braille_dot_centered() {
                     r1 = rounded_dot_base_diameter / 2,
                     r2 = rounded_dot_dome_diameter / 2,
                     center = true,
-                    $fn = cone_segments
+                    $fn = dot_segments
                 );
                 intersection() {
                     translate([0, 0, _center_z])
@@ -344,9 +371,9 @@ module braille_dot_centered() {
         cylinder(
             h  = cone_dot_height,
             r1 = cone_dot_base_diameter / 2,
-            r2 = cone_dot_flat_hat / 2,
+            r2 = cone_dot_top_diameter / 2,
             center = true,
-            $fn = cone_segments
+            $fn = dot_segments
         );
     }
 }
@@ -408,9 +435,9 @@ module letter_plate() {
                     translate([0, y_line, plate_thickness_mm])
                         linear_extrude(height = letter_raise_mm)
                             text(display_text(_text_lines[i]),
-                                 size = char_height_mm,
+                                 size = letter_height_mm,
                                  font = "Liberation Sans",
-                                 spacing = letter_spacing,
+                                 spacing = letter_spacing_factor,
                                  halign = "center",
                                  valign = "center");
                 }
@@ -428,10 +455,10 @@ module braille_face_dots() {
         for (row = [0 : braille_rows - 1]) {
             line = _braille_lines[row];
             if (len(line) > 0) {
-                y_line = braille_block_h / 2 - row * line_spacing;
+                y_line = braille_block_h / 2 - row * braille_line_spacing_mm;
                 for (col = [0 : len(line) - 1]) {
                     // Left-aligned within the block, block centred by longest line
-                    x_cell = -braille_block_w / 2 + col * cell_spacing;
+                    x_cell = -braille_block_w / 2 + col * braille_cell_spacing_mm;
                     dots = get_dot_pattern(line[col]);
                     for (d = [0:5]) {
                         if (dots[d] == 1) {
@@ -599,8 +626,10 @@ if (_est_text_w > _inner_w)
              mm1(_est_text_w + 2 * _border_inset), ", or shorten the line."));
 for (i = [0:_line_count-1])
     if (has_invalid_chars(_braille_lines[i]))
-        echo(str("WARNING: braille Line_", i + 1, " contains non-braille characters. Use Unicode braille (U+2800-U+28FF)."));
-if (char_height_mm < 15.9)
+        echo(str("WARNING: braille_line_", i + 1, " contains non-braille characters. Use Unicode braille (U+2800-U+28FF)."));
+if (_sample_on)
+    echo(str("NOTE: sample_sign is ", sample_sign, "; text_line_N and braille_line_N are ignored."));
+if (letter_height_mm < 15.9)
     echo("NOTE: ADA 703.2.5 requires raised characters at least 15.9 mm (5/8 in) tall.");
 echo("NOTE: ADA defaults are recommendations only - this tool does not guarantee compliance. Mount the braille plate at least 9.5 mm (3/8 in) below the raised text.");
 
@@ -608,16 +637,16 @@ echo("NOTE: ADA defaults are recommendations only - this tool does not guarantee
 // MAIN RENDERING
 // =============================================================================
 // Both mode mirrors the final mounted arrangement on the bed: letter plate
-// above (+Y), braille plate below (-Y), part_gap_mm apart.
+// above (+Y), braille plate below (-Y), plate_gap_mm apart.
 if (show_letter_plate && show_braille_plate) {
-    translate([0, part_gap_mm / 2 + letter_plate_h / 2, 0])
+    translate([0, plate_gap_mm / 2 + letter_plate_h / 2, 0])
         letter_plate();
     if (angled_on) {
-        // Front bed edge of the leaning assembly sits at -part_gap_mm/2
-        translate([0, -part_gap_mm / 2 - bp_base_run / 2, 0])
+        // Front bed edge of the leaning assembly sits at -plate_gap_mm/2
+        translate([0, -plate_gap_mm / 2 - bp_base_run / 2, 0])
             braille_plate_angled();
     } else {
-        translate([0, -part_gap_mm / 2 - braille_plate_h / 2, 0])
+        translate([0, -plate_gap_mm / 2 - braille_plate_h / 2, 0])
             braille_plate_flat();
     }
 } else if (show_letter_plate) {
