@@ -123,7 +123,7 @@ border_height_mm = 0.8;       // [0.2:0.1:2]
 /* [Advanced - Raised letters, ADA 703.2] */
 // Turn a to z into capital letters, as ADA 703.2.2 asks. Accented letters stay as typed.
 force_uppercase = "Yes";      // [Yes, No]
-// Height of the raised capital letters (mm). ADA 703.2.5 asks 15.9 mm (5/8 in) or more.
+// Height of the raised capital letters (mm). ADA 703.2.5 asks 16 mm (5/8 in) or more.
 letter_height_mm = 16;        // [12:0.5:50]
 // How far the letters rise off the plate (mm). ADA 703.2.1 asks 0.8 mm (1/32 in) or more.
 letter_raise_mm = 0.8;        // [0.4:0.05:2]
@@ -243,8 +243,37 @@ _braille_nonempty = [for (i = [0:_line_count-1]) if (len(_braille_lines[i]) > 0)
 text_rows    = len(_text_nonempty) == 0 ? 0 : _text_nonempty[len(_text_nonempty) - 1] + 1;
 braille_rows = len(_braille_nonempty) == 0 ? 0 : _braille_nonempty[len(_braille_nonempty) - 1] + 1;
 
-// Letter layout
+// Letter layout. letter_height_mm is the printed height of the capital I, the
+// letter ADA 703.2.5 measures. Liberation Sans draws its I at 0.9555 of the
+// text() size (measured: 15.288 mm at size 16), so text() gets the dial
+// divided by that ratio.
+LETTER_CAP_RATIO = 0.9555;
+_letter_size = letter_height_mm / LETTER_CAP_RATIO;
 text_line_pitch = letter_height_mm * letter_line_spacing_pct / 100;
+
+// [advance, ink left edge, ink right edge] per unit of text() size, chr(32) to chr(126),
+// Liberation Sans, from scripts/glyph_advances.json (scripts/measure_glyph_advances.py).
+GLYPH_METRICS = [
+    [0.38588, 0, 0], [0.38588, 0.12544, 0.25984], [0.49303, 0.05888, 0.43456], [0.77243, 0.00576, 0.76608], [0.77243, 0.01472, 0.75008],  // space ! " # $
+    [1.23495, 0.04928, 1.18592], [0.92638, 0.04864, 0.90496], [0.26516, 0.0704, 0.19584], [0.46251, 0.08576, 0.4544], [0.46251, 0.00768, 0.37696],  // % & ' ( )
+    [0.5405, 0.02176, 0.51904], [0.81109, 0.0672, 0.74304], [0.38588, 0.12416, 0.26112], [0.46251, 0.06144, 0.40128], [0.38588, 0.12672, 0.2592],  // * + , - .
+    [0.38588, 0, 0.38592], [0.77243, 0.05376, 0.71872], [0.77243, 0.1056, 0.70464], [0.77243, 0.06976, 0.70272], [0.77243, 0.05248, 0.71168],  // / 0 1 2 3
+    [0.77243, 0.03136, 0.73216], [0.77243, 0.05504, 0.71424], [0.77243, 0.0704, 0.71168], [0.77243, 0.07104, 0.70272], [0.77243, 0.06016, 0.71232],  // 4 5 6 7 8
+    [0.77243, 0.06464, 0.7072], [0.38588, 0.12672, 0.2592], [0.38588, 0.12416, 0.26112], [0.81109, 0.06848, 0.74368], [0.81109, 0.0672, 0.74304],  // 9 : ; < =
+    [0.81109, 0.06848, 0.74368], [0.77243, 0.05696, 0.72128], [1.40991, 0.1088, 1.29024], [0.92638, 0.00256, 0.92416], [0.92638, 0.11392, 0.85312],  // > ? @ A B
+    [1.00301, 0.0704, 0.9504], [1.00301, 0.11392, 0.93696], [0.92638, 0.11392, 0.8672], [0.84839, 0.11392, 0.79296], [1.08032, 0.06976, 0.97664],  // C D E F G
+    [1.00301, 0.11392, 0.89024], [0.38588, 0.128, 0.25792], [0.69445, 0.02112, 0.59136], [0.92638, 0.11392, 0.91072], [0.77243, 0.11392, 0.7264],  // H I J K L
+    [1.15696, 0.11392, 1.0432], [1.00301, 0.11392, 0.89024], [1.08032, 0.06528, 1.0144], [0.92638, 0.11392, 0.85312], [1.08032, 0.06528, 1.0144],  // M N O P Q
+    [1.00301, 0.11392, 0.93888], [0.92638, 0.06272, 0.86272], [0.84839, 0.03072, 0.81664], [1.00301, 0.10688, 0.896], [0.92638, 0.00576, 0.92032],  // R S T U V
+    [1.3109, 0.00576, 1.30624], [0.92638, 0.03072, 0.89728], [0.92638, 0.03008, 0.896], [0.84839, 0.04352, 0.80512], [0.38588, 0.09856, 0.37504],  // W X Y Z [
+    [0.38588, 0, 0.38592], [0.38588, 0.01024, 0.28736], [0.65172, 0.0064, 0.64512], [0.77243, -0.02112, 0.78848], [0.46251, 0.07168, 0.35968],  // \ ] ^ _ `
+    [0.77243, 0.05888, 0.77248], [0.77243, 0.08896, 0.71424], [0.69445, 0.05888, 0.65792], [0.77243, 0.05824, 0.68288], [0.77243, 0.05888, 0.71104],  // a b c d e
+    [0.38588, 0.0192, 0.38848], [0.77243, 0.05824, 0.68288], [0.77243, 0.096, 0.68224], [0.30857, 0.0928, 0.21504], [0.30857, -0.03392, 0.21504],  // f g h i j
+    [0.69445, 0.09344, 0.69696], [0.30857, 0.09344, 0.21568], [1.15696, 0.09216, 1.0656], [0.77243, 0.09216, 0.68224], [0.77243, 0.05824, 0.71424],  // k l m n o
+    [0.77243, 0.08896, 0.71424], [0.77243, 0.05824, 0.68416], [0.46251, 0.09216, 0.43968], [0.69445, 0.0384, 0.64448], [0.38588, 0.02048, 0.37568],  // p q r s t
+    [0.77243, 0.0896, 0.68032], [0.69445, 0.00448, 0.68992], [1.00301, -0.00256, 1.00672], [0.69445, 0.01536, 0.67968], [0.69445, 0.0032, 0.69184],  // u v w x y
+    [0.69445, 0.05568, 0.62528], [0.46387, 0.02304, 0.43968], [0.36079, 0.12352, 0.2368], [0.46387, 0.02304, 0.43904], [0.81109, 0.06208, 0.7488]  // z { | } ~
+];
 
 // Braille dot metrics
 dot_total_height = use_rounded_dots
@@ -259,16 +288,14 @@ braille_block_h = braille_rows  <= 1 ? 0 : (braille_rows - 1) * braille_line_spa
 
 // Effective sign size. In auto-fit mode (default) the plates grow so every
 // row of letters, braille dots, and the plate heights always fit.
-// Manual mode keeps the exact size set above. Uppercase Liberation Sans
-// advances average ~0.94 x size per character (measured with textmetrics).
+// Manual mode keeps the exact size set above.
 auto_fit_on = (auto_fit == "Yes");
 _plate_pad = (border_on ? border_width_mm : 0) + 4;
 _dot_base_d = (dot_shape == "Rounded")
     ? rounded_dot_base_diameter : cone_dot_base_diameter;
-CHAR_ADVANCE_FACTOR = 0.94;
 _est_text_w = text_rows == 0 ? 0
-    : max([for (l = _text_lines) len(display_text(l))])
-      * letter_height_mm * CHAR_ADVANCE_FACTOR * letter_spacing_factor;
+    : max([for (l = _text_lines) _text_line_width(display_text(l), letter_spacing_factor)])
+      * _letter_size;
 _braille_block_total_w = braille_max_len == 0 ? 0
     : braille_block_w + braille_dot_spacing_mm + _dot_base_d;
 sign_w = auto_fit_on
@@ -315,6 +342,29 @@ function to_upper(s) =
         (o >= 97 && o <= 122) ? o - 32 : o]);
 
 function display_text(s) = uppercase_on ? to_upper(s) : s;
+
+function _sum(v, i = 0) = i >= len(v) ? 0 : v[i] + _sum(v, i + 1);
+
+// A character's GLYPH_METRICS row; one outside the table gets an average width.
+function _glyph(c) =
+    let(o = ord(c))
+    (o >= 32 && o <= 126) ? GLYPH_METRICS[o - 32] : [0.94, 0, 0.94];
+
+// Width a line needs on the plate, per unit of text() size. text() centres
+// the line's advances (each times the spacing factor), not its ink, so the
+// ink can sit off centre: the line needs twice the ink's reach from the centre.
+function _text_line_width(s, k) =
+    let(n = len(s),
+        m = [for (i = [0 : 1 : n - 1]) _glyph(s[i])],
+        inked = [for (i = [0 : 1 : n - 1]) if (m[i][2] > m[i][1]) i])
+    len(inked) == 0 ? 0 :
+    let(first = inked[0],
+        last = inked[len(inked) - 1],
+        adv = [for (i = [0 : 1 : n - 1]) k * m[i][0]],
+        total = _sum(adv),
+        left = _sum([for (i = [0 : 1 : first - 1]) adv[i]]) + m[first][1],
+        right = _sum([for (i = [0 : 1 : last - 1]) adv[i]]) + m[last][2])
+    max(total - 2 * left, 2 * right - total);
 
 function is_braille_char(c) = (c >= 10240 && c <= 10495);
 function has_invalid_chars(str) =
@@ -435,7 +485,7 @@ module letter_plate() {
                     translate([0, y_line, plate_thickness_mm])
                         linear_extrude(height = letter_raise_mm)
                             text(display_text(_text_lines[i]),
-                                 size = letter_height_mm,
+                                 size = _letter_size,
                                  font = "Liberation Sans",
                                  spacing = letter_spacing_factor,
                                  halign = "center",
@@ -604,6 +654,8 @@ module braille_plate_angled() {
 echo(str("Braille sign: ", text_rows, " text line(s), ", braille_rows,
          " braille line(s), ", sign_w, " mm wide, plates ",
          letter_plate_h, " + ", braille_plate_h, " mm tall"));
+if (text_rows > 0)
+    echo(str("Text width estimate: ", mm1(_est_text_w), " mm"));
 if (text_rows > 0 && _letter_block_h > _letter_inner_h)
     echo(str("WARNING: TEXT TOO TALL: ", mm1(_letter_block_h), "/", mm1(_letter_inner_h),
              " mm. The raised text block is taller than the letter plate's usable height. ",
@@ -629,8 +681,8 @@ for (i = [0:_line_count-1])
         echo(str("WARNING: braille_line_", i + 1, " contains non-braille characters. Use Unicode braille (U+2800-U+28FF)."));
 if (_sample_on)
     echo(str("NOTE: sample_sign is ", sample_sign, "; text_line_N and braille_line_N are ignored."));
-if (letter_height_mm < 15.9)
-    echo("NOTE: ADA 703.2.5 requires raised characters at least 15.9 mm (5/8 in) tall.");
+if (letter_height_mm < 16)
+    echo("NOTE: letter_height_mm is under 16 mm (5/8 in); ADA 703.2.5 asks raised characters at least that tall, measured on the capital I.");
 echo("NOTE: ADA defaults are recommendations only - this tool does not guarantee compliance. Mount the braille plate at least 9.5 mm (3/8 in) below the raised text.");
 
 // =============================================================================
