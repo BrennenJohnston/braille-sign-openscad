@@ -3,6 +3,7 @@
 
 # Render outputs
 *.stl
+!stl/*.stl
 *.png
 *.bak
 
