@@ -1,0 +1,34 @@
+{
+  "Restroom": {
+    "text": [
+      "Restroom"
+    ],
+    "braille": [
+      "⠗⠑⠌⠗⠕⠕⠍"
+    ]
+  },
+  "Exit": {
+    "text": [
+      "Exit"
+    ],
+    "braille": [
+      "⠑⠭⠊⠞"
+    ]
+  },
+  "Stairs": {
+    "text": [
+      "Stairs"
+    ],
+    "braille": [
+      "⠌⠁⠊⠗⠎"
+    ]
+  },
+  "Room 101": {
+    "text": [
+      "Room 101"
+    ],
+    "braille": [
+      "⠗⠕⠕⠍⠀⠼⠁⠚⠁"
+    ]
+  }
+}
