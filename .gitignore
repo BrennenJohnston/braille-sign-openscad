@@ -5,6 +5,7 @@
 *.stl
 !stl/*.stl
 *.png
+!docs/images/*.png
 *.bak
 
 # Python
