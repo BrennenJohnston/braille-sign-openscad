@@ -10,8 +10,8 @@ The generator makes a **two-part sign**: a **letter plate** carrying raised
 uppercase characters, and a **braille plate** carrying the same wording in
 braille. They are separate plates because they want opposite print orientations —
 raised letters print best flat, braille prints best leaning back. Mounted
-together with the letters above the braille, their split borders form one
-continuous tactile frame.
+touching, letters above braille, their split borders form one continuous tactile
+frame.
 
 > **ADA note.** The defaults follow the published §703 figures, but this tool
 > does **not** guarantee compliance. Real signage has requirements this
@@ -23,81 +23,106 @@ continuous tactile frame.
 
 ## 1. What to include
 
-A sign says one thing. The 2010 ADA Standards require **uppercase** raised
-characters at least **15.9 mm (5/8 in)** tall, which sets the scale: at the
-default 16 mm character height and 135% line spacing, each line of text is about
-21.6 mm of plate height before margins.
+A sign says one thing. The 2010 ADA Standards ask for **uppercase** raised
+characters at least **16 mm (5/8 in)** tall, which sets the scale: at the
+default `letter_height_mm` of 16 and `letter_line_spacing_pct` of 135, each line
+of letters takes 21.6 mm of plate height before margins.
 
-- `sign_text_1` through `sign_text_6` hold up to six lines of raised text.
-  `Line_1` through `Line_6` hold the matching braille. **They pair up** —
-  `sign_text_2` and `Line_2` are the same line of the sign in two scripts.
+- If your sign is one of the samples, pick it: `sample_sign` offers Restroom,
+  Exit, Stairs and Room 101, each with its own wording and braille, so you can
+  skip section 2.
+- Otherwise `text_line_1` to `text_line_6` hold up to six lines of raised
+  letters, and `braille_line_1` to `braille_line_6` hold the matching braille.
+  **They pair up**: `text_line_2` and `braille_line_2` are the same line of the
+  sign in two scripts.
 - Leave `auto_fit` on `Yes` and the plates grow to fit whatever you enter, so
   there is no fixed capacity to plan around. The default `sign_width_mm` of
   160 mm and plate heights of 70 mm (letters) and 40 mm (braille) become minimums.
 - Keep it to what a person needs at a doorway: a room number, a room name, a
   direction. `Room 101`. `Exit`. `Staff Only`. Long sentences belong on a
   document, not a sign.
-- Braille takes roughly three times the space of print, so the braille plate is
-  usually the one that forces the sign wider.
+- At the default letter height, a line of raised letters is more than twice as
+  wide as its braille (RESTROOM: about 144 mm of letters over 43 mm of braille),
+  so the letters are what make a long sign wider.
 
 ## 2. Translate your text
 
+Skip this section if you picked a sample sign: it brings its own braille.
+
 MakerWorld's customizer cannot translate English for you. You type your plain
-text into `sign_text_N` for the raised letters, and separately paste
-**pre-translated Unicode braille** — the dot characters in the range
-U+2800–U+28FF — into `Line_N`.
+text into `text_line_1` to `text_line_6` for the raised letters, and separately
+paste **pre-translated Unicode braille (U+2800–U+28FF)**, the characters that
+look like patterns of dots, into `braille_line_1` to `braille_line_6`.
 
-1. Open a braille translator such as
-   <https://www.branah.com/braille-translator>.
-2. Choose **Grade 2** (contracted braille, where common words and letter groups
-   are shortened) for signage. Grade 2 is the convention for permanent tactile
-   signs and it is what most adult braille readers read fluently. Grade 1
-   (uncontracted) is available and is not wrong, just longer.
-3. Make sure the output is **Unicode braille**, not ASCII/BRF braille. Unicode
-   braille looks like dot patterns (`⠠⠗⠕⠕⠍`); ASCII braille looks like ordinary
-   letters and punctuation and will not work.
-4. Translate **each line separately** so the braille lines match the text lines.
-5. Copy each result into the matching `Line_N`.
+Signs use contracted braille: Grade 2, where common words and letter groups are
+shortened, as ADA 703.3 asks. The steps below use [the Branah braille
+translator](https://www.branah.com/braille-translator). Its own page says its
+Grade 2 is still a work in progress and may shorten a word where it should not,
+so check what it gives you, or use the OpenSCAD Assistive Forge (section 8),
+which translates with liblouis.
 
-The shipped default is `sign_text_1` = `Room 101` with `Line_1` =
-`⠠⠗⠕⠕⠍⠀⠼⠁⠚⠁`. Replace both.
+1. Open the Branah braille translator.
+2. Choose **Grade 2 Braille**.
+3. Choose **Unicode Braille**, not ASCII or BRF braille. Unicode braille looks
+   like dot patterns: Room 101 is `⠗⠕⠕⠍⠀⠼⠁⠚⠁`. ASCII braille looks like
+   ordinary letters and punctuation and does not work.
+4. Type one line of your wording in lowercase. Keep a capital only at the start
+   of a sentence and for names, single letters, initials and acronyms: those are
+   the only places ADA 703.3.1 allows the braille capital sign.
+5. Copy the braille.
+6. Paste it into the matching braille line: `braille_line_1` for line 1,
+   `braille_line_2` for line 2, and so on.
+7. Repeat steps 4 to 6 for each line.
+
+The shipped default is `text_line_1` = `Room 101`, with its braille in
+`braille_line_1`. Replace both.
 
 **An automatic translator is not a certified transcriber.** For a sign that will
-be installed in a public building, have the braille checked by a UEB-certified
-transcriber before you print a set.
+be installed in a public building, have a transcriber certified in Unified
+English Braille (UEB) check the braille before you print a set.
 
 ## 3. Using the customizer
 
+The Customizer's first four tabs, **Step 1** to **Step 4**, hold everything a
+first sign needs. Every tab after them starts with "Advanced", and every dial
+there has a working default.
+
 1. Go to MakerWorld → **Create** → **Parametric Model Maker** and upload
    **only** `Braille_Sign_STL_Generator.scad`.
-2. Type your wording into `sign_text_1` … `sign_text_6` under **Sign Text -
-   Raised Letters**. Leave unused lines empty.
-3. Paste the matching Unicode braille into `Line_1` … `Line_6` under **Text
-   Input - Pre-Translated Braille**.
-4. Leave `auto_fit` on `Yes` under **Sign Layout**. The plates then grow to fit
-   both scripts, treating `sign_width_mm`, `letter_plate_height_mm`, and
+2. Under **Step 1 - Pick a sample sign or type your own**, pick a sample sign in
+   `sample_sign` (`Restroom`, `Exit`, `Stairs` or `Room 101`), or leave it on
+   `Type my own`. A sample brings its own wording and braille: go on to step 5.
+3. With `Type my own`, type your wording into `text_line_1` to `text_line_6`,
+   one line of the sign per dial. Leave unused lines empty.
+4. Under **Step 2 - Braille, pasted from a translator**, paste the matching
+   Unicode braille into `braille_line_1` to `braille_line_6` (section 2).
+5. Under **Step 3 - What to export**, set `sign_part` to `Letter plate`. `Both`
+   lays the two plates side by side on the bed, `plate_gap_mm` (8 mm) apart, but
+   the plates print best with different settings (section 4), so export them one
+   at a time.
+6. Leave `print_orientation` on `Angled`. This affects the **braille plate
+   only**, which then prints leaning back on break-away fins; the letter plate
+   always prints flat.
+7. Under **Step 4 - Size**, leave `auto_fit` on `Yes`. The plates then grow to
+   fit both scripts, treating `sign_width_mm`, `letter_plate_height_mm` and
    `braille_plate_height_mm` as minimums. Turning it off means you are
    responsible for the sign being big enough.
-5. Leave `sign_part` on `Both` to lay both plates side by side on the bed with
-   `part_gap_mm` (default 8 mm) between them. Set it to `Letter plate` or
-   `Braille plate` to export one at a time — useful when you want different print
-   settings per plate, which you usually do.
-6. Leave `print_orientation` on `Angled` and `face_angle_deg` on 75. This affects
-   the **braille plate only**; the letter plate always prints flat.
-7. Leave `force_uppercase` on `Yes`. ADA §703.2.2 requires uppercase raised
-   characters.
-8. Generate and render, then download the STL.
+8. Generate the model.
+9. Download the STL: this is the letter plate.
+10. Set `sign_part` to `Braille plate`.
+11. Generate the model again.
+12. Download the STL: this is the braille plate.
 
-Everything else has a working default. The parameters worth knowing about:
+You can leave the Advanced tabs alone. What each one holds, with its defaults:
 
-| Section | What it controls |
-|---------|------------------|
-| Raised Lettering - ADA 703 | `char_height_mm` (16), `letter_raise_mm` (0.8), `line_spacing_pct` (135), `letter_spacing` (1.1), `force_uppercase` |
-| Border | Split raised border: `add_border`, `border_width_mm` (2), `border_height_mm` (0.8) |
-| Support Fins (Angled) | Fin interval, offset, thickness, height; bridge count, size, contact; brim |
-| Braille Dot Shape | `dot_shape` (`Rounded` default or `Cone`), `cell_spacing` (7.0), `line_spacing` (10.0), `dot_spacing` (2.5) |
-| Braille Dot Shape - Rounded / Cone | Dot dimensions for the selected shape |
-| Rendering Quality | `render_quality` (default `Medium`) and `cone_segments` |
+| Tab | What it holds |
+|-----|---------------|
+| Advanced - Plates and border | `plate_thickness_mm` (3), `plate_gap_mm` (8), `add_border` (`Yes`), `border_width_mm` (2), `border_height_mm` (0.8) |
+| Advanced - Raised letters, ADA 703.2 | `force_uppercase` (`Yes`), `letter_height_mm` (16), `letter_raise_mm` (0.8), `letter_line_spacing_pct` (135), `letter_spacing_factor` (1.1) |
+| Advanced - Braille spacing, ADA 703.3 | `braille_cell_spacing_mm` (6.5), `braille_line_spacing_mm` (10.0), `braille_dot_spacing_mm` (2.5), `braille_clearance_mm` (9.5) |
+| Advanced - Braille dot shape | `dot_shape` (`Rounded`), then the size of the `Rounded` and the `Cone` dot |
+| Advanced - Braille plate lean and support fins | `face_angle_deg` (75), `support_fins` (`Yes`), then the fin, bridge and brim sizes |
+| Advanced - Warnings and rendering | `show_warnings` (`Yes`), `render_quality` (`Medium`), `dot_segments` (40) |
 
 The font is fixed at Liberation Sans and is not a parameter. It is a sans-serif
 face, which is what §703.2.3 asks for, and it is a font MakerWorld's renderer
@@ -105,35 +130,45 @@ reliably has.
 
 ## 4. The two-part workflow
 
-This is the part that surprises people, so it is worth being explicit: **the two
-plates want different print settings, so print them as two jobs.**
+The two plates want different print settings, so print them as two jobs.
 
 | | Letter plate | Braille plate |
 |--|--------------|---------------|
 | Orientation | flat, letters up | leaning back 75° |
-| Supports | none | none (modelled fins) |
+| Supports | none | none (modeled fins) |
 | Layer height | 0.2 mm is fine | 0.1 mm |
 | Carries | top and side border rails | bottom and side border rails |
 
-The raised characters are 0.8 mm tall and 16 mm across — coarse features that
-print cleanly flat at ordinary layer heights. The braille dots are 0.7 mm tall
-and 1.6 mm across, which is why they get the angled orientation and the fine
-layer height.
+The raised letters stand 16 mm tall and rise 0.8 mm off the plate — coarse
+features that print cleanly flat at ordinary layer heights. A braille dot is
+0.7 mm tall and 1.6 mm across, which is why the braille plate gets the angled
+orientation and the fine layer height.
 
-`sign_part = Both` puts both plates on one bed for convenience, but if you print
-them together you have to compromise on layer height. Exporting them separately
-and slicing each with its own settings gives a better sign.
+`sign_part` = `Both` puts both plates on one bed for convenience, but if you
+print them together you have to compromise on layer height. Exporting them
+separately and slicing each with its own settings gives a better sign.
 
-**Mounting them.** The letter plate goes above the braille plate. ADA §703.3.2
-wants the braille at least **9.5 mm (3/8 in)** below the raised characters —
-this generator does **not** model that offset, so it is on you when you mount.
-The split border is the alignment aid: the letter plate carries the top and side
-rails, the braille plate carries the bottom and side rails, so when the vertical
-rails line up the two plates are square to each other and the frame reads as one
-continuous edge under a hand.
+**Mounting them.** The two plates touch on the wall, letters above braille. The
+letter plate carries the top and side rails of the raised border and the braille
+plate the bottom and side rails, so when the plates meet, the rails run as one
+frame around the sign, square and continuous under a hand.
 
-§703.4 also governs where the sign goes — mounting height and position relative
-to the door. This generator has nothing to say about that; read the standard.
+1. Lay the letter plate above the braille plate, both face up.
+2. Push the plates together until their side rails meet in one straight line.
+3. Stick adhesive strips or double-sided tape to the back of each plate.
+4. Pick the height on the wall: the bottom row of braille at least 1220 mm
+   (48 in) above the floor, and the baseline of the top line of letters (the
+   line the letters stand on) at most 1525 mm (60 in) above the floor.
+5. Press the letter plate onto the wall.
+6. Press the braille plate onto the wall right below it, with the side rails
+   meeting.
+
+ADA §703.3.2 asks for at least 9.5 mm (3/8 in) between the braille and the
+raised letters. With the plates touching, the generator's spacing already gives
+more than that: about 43 mm on the default sign.
+
+§703.4 also says which side of the door the sign goes on. The
+[User Guide](guides/user-guide.md#where-it-goes) gives those rules in plain words.
 
 ## 5. Printing it
 
@@ -145,7 +180,7 @@ slicer supports.
 | Layer height | 0.2 mm | 0.1 mm |
 | Material | PLA or PETG | PLA or PETG |
 | Supports | none | none |
-| Brim | not needed | optional (one is modelled under each fin) |
+| Brim | not needed | optional (one is modeled under each fin) |
 | Outer wall speed | normal | 30–40 mm/s or slower |
 
 Why 0.1 mm on the braille plate: braille standards cap dot height at 0.9 mm, so
@@ -159,10 +194,13 @@ it.
 After printing the braille plate: flex or snip the fins off the back, then deburr
 the small nubs the bridges leave with a fingernail or fine sandpaper.
 
-**Contrast.** ADA signage requires the characters to contrast with their
-background. A single-colour print does not do that. If your printer can change
-filament mid-print, the raised characters and the border are the parts to change
-colour; otherwise plan to paint them.
+**Contrast.** The ADA Standards ask for raised characters that contrast with
+their background, and a print in one color has none. If your slicer can pause for a
+filament change, add one on the letter plate at the first layer above 3 mm, the
+top of the plate at the default `plate_thickness_mm`, so the raised characters
+and the border print in the second color. Otherwise, paint the raised characters
+in a matte color that contrasts with the plate. The braille does not need to
+contrast.
 
 ## 6. Why we designed it this way
 
@@ -198,57 +236,79 @@ nearly horizontal and needs support or prints rough; at 75° the face tilts back
 support-free. The fins, the bridges, and the brim all exist to make that angle
 printable in one pass.
 
+**What you may change:** `face_angle_deg` runs from 60 to 90; 75 to 90 reads
+best, and 75 needs no slicer supports. `print_orientation` = `Flat` prints the
+braille plate dots up, which puts the layer seams across the dots.
+
 ### The letter dimensions come from ADA §703.2
 
-**The decision:** `char_height_mm` 16 mm, `letter_raise_mm` 0.8 mm,
-`line_spacing_pct` 135, `letter_spacing` 1.1, `force_uppercase` = `Yes`, a
-sans-serif font.
+**The decision:** `letter_height_mm` 16 mm, the printed height of the capital I;
+`letter_raise_mm` 0.8 mm; `letter_line_spacing_pct` 135; `letter_spacing_factor`
+1.1; `force_uppercase` = `Yes`; a sans-serif font.
+
+**The number:** Liberation Sans draws its capital I at 0.9555 of the font size,
+so the file divides `letter_height_mm` by 0.9555 before it sets the size: the
+dial at 16 prints an I 16.0 mm tall, measured on the mesh. The dial means the
+printed height because §703.2.5 measures the printed capital I.
 
 **The evidence:**
 
-> **2010 ADA Standards for Accessible Design, §703.** <https://archive.ada.gov/>
+> **2010 ADA Standards for Accessible Design, §703.**
+> <https://archive.ada.gov/>
 >
 > Why it matters: §703.3 fixes the braille dot envelope (base 1.5–1.6 mm, height
 > 0.6–0.9 mm, domed not pointed); §703.2 fixes raised-character height (minimum
-> 15.9 mm / 5/8 in) and relief (minimum 0.8 mm / 1/32 in).
+> 15.9 mm / 5/8 in) and relief (minimum 0.8 mm / 1/32 in). Cited as a dimensional
+> envelope, **never as a compliance claim** — see §5.
+
+The block's "§5" is the documentation standard's own section on compliance
+language, not section 5 of this guide. 5/8 in is 15.875 mm; the 2010 Standards
+print it as "5/8 inch (16 mm)", and 16 mm is the figure this generator uses.
 
 The specific figures each default answers:
 
-| Default | §703 requirement |
+| Default | §703 figure |
 |---------|------------------|
-| `char_height_mm = 16` | §703.2.5, minimum 15.9 mm (5/8 in) |
-| `letter_raise_mm = 0.8` | §703.2.1, minimum 0.8 mm (1/32 in) |
-| `line_spacing_pct = 135` | §703.2.8, 135% of character height |
-| `letter_spacing = 1.1` | §703.2.8, clear space between characters |
+| `letter_height_mm = 16` | §703.2.5, 16 mm (5/8 in) minimum, on the capital I |
+| `letter_raise_mm = 0.8` | §703.2.1, 0.8 mm (1/32 in) minimum |
+| `letter_line_spacing_pct = 135` | §703.2.8, 135 to 170% of the letter height |
+| `letter_spacing_factor = 1.1` | §703.2.7, character spacing |
 | `force_uppercase = Yes` | §703.2.2, uppercase characters |
-| Liberation Sans | §703.2.3, sans-serif |
+| Liberation Sans | §703.2.3, sans serif |
 
-The generator warns if you set `char_height_mm` below 15.9. The slider allows
-values down to 12 mm because a smaller sign is sometimes what you need — but
-below 15.9 mm you are no longer inside the figure the standard publishes, and the
-sign should not be described as following it.
+**What you may change:** below 16 mm, desktop OpenSCAD's preview shows LETTERS
+UNDER 16 MM and its console prints a note; MakerWorld shows neither. The slider
+allows values down to 12 mm because a smaller sign has uses outside the ADA
+Standards, but below 16 mm you are no longer inside the figure the standard
+publishes, and the sign should not be described as following it.
+`letter_raise_mm` and `letter_line_spacing_pct` also print a console note outside
+their ADA figures; `letter_spacing_factor` has no check.
 
 ### The braille dot geometry and spacing
 
 **The decision:** the default `Rounded` dot is a 1.6 mm base tapering to a
 1.4 mm dome, 0.35 mm of base plus 0.35 mm of dome — **0.7 mm total height on a
-1.6 mm base**. Spacing is `cell_spacing` 7.0 mm, `line_spacing` 10.0 mm,
-`dot_spacing` 2.5 mm.
+1.6 mm base**. Spacing is `braille_cell_spacing_mm` 6.5 mm,
+`braille_line_spacing_mm` 10.0 mm, `braille_dot_spacing_mm` 2.5 mm.
 
-**The evidence:**
+**The number:** measured on the plate, a dot stands 0.68 mm proud of the face,
+because it sinks 0.02 mm into the plate to fuse with it.
 
-> **2010 ADA Standards for Accessible Design, §703.3.** <https://archive.ada.gov/>
->
-> Why it matters: braille dots must be domed, not pointed, within a base of
-> 1.5–1.6 mm and a height of 0.6–0.9 mm.
+**The evidence:** ADA Table 703.3.1, from the Standards' own text: dot base
+diameter 1.5 to 1.6 mm (0.059 to 0.063 in); dot height 0.6 to 0.9 mm (0.025 to
+0.037 in); dots in a cell 2.3 to 2.5 mm (0.090 to 0.100 in) apart; matching dots
+in neighboring cells 6.1 to 7.6 mm (0.241 to 0.300 in); a cell and the cell
+directly below 10 to 10.2 mm (0.395 to 0.400 in), all center to center; the dots
+domed or rounded. And from the documentation standard's evidence library:
 
 > **ISO 17049:2013, *Accessible design — Application of braille on signage,
-> equipment and appliances*.** <https://www.iso.org/standard/58090.html>
+> equipment and appliances*.**
+> <https://www.iso.org/standard/58090.html>
 >
-> Why it matters: where ADA and ISO 17049 overlap — dot base **1.5–1.6 mm**, dot
-> height **0.6–0.7 mm**, cell pitch **6.1–6.8 mm**, line pitch
-> **10.0–10.2 mm** — is the safest target for a sign that may be read by someone
-> trained on either standard.
+> Why it matters: the international dot geometry range. Where ADA and ISO 17049
+> overlap — dot base **1.5–1.6 mm**, dot height **0.6–0.7 mm**, cell pitch
+> **6.1–6.8 mm**, line pitch **10.0–10.2 mm** — is the safest target for a model
+> that may be read by someone trained on either standard.
 
 > **BANA, *Size and Spacing of Braille Characters*.**
 > <https://brailleauthority.org/size-and-spacing-braille-characters>
@@ -265,6 +325,9 @@ sign should not be described as following it.
 > capped at 0.9 mm by the braille standards, so layer height is the only lever
 > left for how smooth a dot feels.
 
+The default dot sits inside the ADA and ISO 17049 overlap: base 1.6 mm, height
+0.7 mm, cell pitch 6.5 mm, line pitch 10.0 mm.
+
 **Why a base under the dome.** A pure spherical dome on a 1.6 mm base physically
 cannot exceed 0.8 mm tall — a hemisphere is as tall as it gets. The tapered base
 section is what lets the dot reach the upper part of the legal height range while
@@ -273,28 +336,50 @@ printable overhang when the plate leans.
 
 **Why the layer height matters more than it looks like it should.** Because the
 standards cap the dot at 0.9 mm, the only remaining control over how a dot feels
-is how finely it is sliced. A 0.7 mm dome is seven layers at 0.1 mm and three at
-0.2 mm, and three layers is a staircase the fingertip notices instead of the dot.
+is how finely it is sliced. Printed flat, a 0.7 mm dot is seven layers at 0.1 mm
+and only three or four at 0.2 mm, and a few layers make a staircase the fingertip
+notices instead of the dot.
+
+**What you may change:** every braille slider spans Table 703.3.1 and no
+further, and a check in the file stops the render if a value goes outside it.
+`dot_shape` = `Cone` gives a pointed dot with a flat top for printers that print
+`Rounded` badly; it is not the domed shape ADA asks for.
+
+### The 9.5 mm braille clearance
+
+**The decision:** auto-fit keeps the braille `braille_clearance_mm` (9.5 mm)
+inside the border rails; the letters keep 4 mm.
+
+**The number:** on a six-line sign, the braille sits 9.505 mm from the bottom
+rail, measured where each dot meets the face. With the plates touching on the
+wall, the braille sits 43.473 mm below the lowest letter on the default sign.
+
+**The evidence:** ADA 703.3.2, from the Standards' own text: "Braille shall be
+separated 3/8 inch (9.5 mm) minimum from any other tactile characters and 3/8
+inch (9.5 mm) minimum from raised borders and decorative elements."
+
+**What you may change:** `braille_clearance_mm` runs from 9.5 to 20 mm, and a
+check stops the render below 9.5. With `auto_fit` off, braille that fits the
+plate but not with this space sets off BRAILLE TOO CLOSE TO BORDER (section 7).
 
 ### The border is split between the plates
 
 The letter plate carries the top and side rails; the braille plate carries the
-bottom and side rails. Mounted with the letters above the braille, they read as
-one continuous frame. Beyond looking right, the frame is a tactile boundary: a
-hand sweeping the sign finds the edge and knows where the content starts.
-`border_height_mm` defaults to 0.8 mm, matching the letter relief.
+bottom and side rails. Mounted touching, letters above braille, they read as one
+continuous frame. Beyond looking right, the frame is a tactile boundary: a hand
+sweeping the sign finds the edge and knows where the content starts.
+`border_width_mm` defaults to 2 mm and `border_height_mm` to 0.8 mm, matching the
+letter relief.
 
 ### What this generator does not do
 
 Being explicit about the gaps is part of the design:
 
-- **Mounting height and location (§703.4)** — not modelled. Read the standard.
-- **The 9.5 mm braille offset below the raised text (§703.3.2)** — not modelled.
-  You set it when you mount the plates.
-- **Contrast and glare (§703.5)** — a single-colour print has no contrast.
+- **Mounting height and location (§703.4)** — not modeled. Section 4 gives the
+  heights, and the User Guide the side of the door.
+- **Contrast and glare (§703.5)** — a single-color print has no contrast.
 - **Character width ratios (§703.2.4)** — the font's proportions are the font's.
-- **Verified translation** — an automatic translator is not a certified
-  transcriber.
+- **Verified translation** — an automatic translator is not a certified transcriber.
 
 ### Why a parametric upload at all
 
@@ -305,6 +390,7 @@ Being explicit about the gaps is part of the design:
 > Why it matters: identifies that mainstream CAD is visually dependent enough to
 > force blind designers to work through sighted intermediaries, and builds its
 > accessible workflow **on OpenSCAD** specifically because the design is text.
+> Every model in this family is an OpenSCAD script for this reason.
 
 > **Zhang, Li, Yu, Faruqi, Xie, Kim, Fan, Forbes, Wobbrock, Guo, He —
 > "A11yShape: AI-Assisted 3-D Modeling for Blind and Low-Vision Programmers,"
@@ -313,7 +399,9 @@ Being explicit about the gaps is part of the design:
 >
 > Why it matters: four blind and low-vision programmers independently produced
 > 12 models in OpenSCAD — "tasks that were previously impossible without
-> assistance from sighted individuals."
+> assistance from sighted individuals." The finding that makes a parametric
+> upload worth the effort: a customizer panel over a script is something a blind
+> maker can drive alone, where a mesh editor is not.
 
 The person who most needs a braille sign should be able to make one without
 asking a sighted person to drive the software. That is why this is a script with
@@ -321,56 +409,106 @@ a parameter panel and not a mesh.
 
 ## 7. Troubleshooting
 
-**Read this first.** This model has no on-model warning text. Every problem it
-detects is reported as an OpenSCAD `echo()` in the console, and **MakerWorld's
-Parametric Model Maker does not show you a console.** The entries below give the
-visible symptom to look for in the preview alongside the exact console string you
-would see in desktop OpenSCAD.
+**Read this first.** MakerWorld shows none of this model's warnings. In desktop
+OpenSCAD, the generator shows each problem twice: as red words beside the sign
+in the preview, and as a line with its numbers in the console under the preview.
+The red words are on while `show_warnings`, under **Advanced - Warnings and
+rendering**, is `Yes`, its default. MakerWorld's Parametric Model Maker shows the
+rendered model only, without the preview words and without a console. So each
+entry below starts with what you can see on MakerWorld, then gives the exact
+words desktop OpenSCAD shows, then the fix in order of preference. The
+[full guide](guides/full-guide.md#warnings-and-notes) explains every warning and
+note for desktop OpenSCAD.
 
-The single best defence: **leave `auto_fit` on `Yes`.** Every "too tall" and "too
-wide" warning below is only reachable with `auto_fit` off.
+In the console texts below, a word in braces, such as `{n}`, stands for the
+number or name the console prints.
+
+The best defense: **leave `auto_fit` on `Yes`.** Every "too tall", "too wide"
+and "too close" warning below appears only with `auto_fit` off.
 
 ### A braille cell renders as a blank patch with no dots
 
-**Console string:** `WARNING: braille Line_N contains non-braille characters. Use
-Unicode braille (U+2800-U+28FF).`
-
-**What you can see:** a gap in the braille line where dots should be. An invalid
-character decodes to an empty dot pattern, so the plate still renders — just
-without those dots.
-
-**Fix:** you pasted typed English or ASCII/BRF braille into a `Line_N` field.
-Re-translate at <https://www.branah.com/braille-translator> with **Unicode
-braille** output. Unicode braille characters look like dot patterns; nothing else
-does.
+- **On MakerWorld:** no message. The braille line has blank cells where dots
+  should be, or no dots at all when the whole line is typed letters. A character
+  that is not braille prints no dots, so the plate still renders.
+- **In desktop OpenSCAD:** the preview shows `NOT BRAILLE IN LINE {n}`, and the
+  console prints
+  `WARNING: braille_line_{n} contains non-braille characters. Use Unicode braille (U+2800-U+28FF).`
+- **Fix:** you pasted typed letters or ASCII/BRF braille into that braille line.
+  Translate it again with **Unicode braille** output (section 2) and paste the
+  result. An ordinary space also sets off the warning, though it prints the same
+  blank cell: between braille words, use the blank braille cell, U+2800.
 
 ### Text or braille overflows the plate
 
-**Console strings:** `WARNING: TEXT TOO TALL: …`, `WARNING: BRAILLE TOO TALL: …`,
-`WARNING: BRAILLE TOO WIDE: …`, `WARNING: TEXT TOO WIDE: …`. Each reports the
-measured size against the available size and the minimum you would need.
+- **On MakerWorld:** no message. Letters or dots run over a border rail or past
+  the edge of the plate; a long line of letters can hang off both sides.
+- **In desktop OpenSCAD:** the preview shows one of these red words, and the
+  console prints the line beside it, with the measured size against the space
+  available and the size you would need:
+  - `TEXT TOO WIDE`:
+    `WARNING: TEXT TOO WIDE: {estimate}/{space} mm (estimated from character advances, so treat it as approximate). Turn on auto_fit, raise sign_width_mm to at least {width}, or shorten the line.`
+  - `TEXT TOO TALL`:
+    `WARNING: TEXT TOO TALL: {block}/{space} mm. The raised text block is taller than the letter plate's usable height. Turn on auto_fit, raise letter_plate_height_mm to at least {height}, or remove a line.`
+  - `BRAILLE TOO WIDE`:
+    `WARNING: BRAILLE TOO WIDE: {block}/{space} mm (longest line is {cells} cells). Turn on auto_fit, raise sign_width_mm to at least {width}, or shorten the line.`
+  - `BRAILLE TOO TALL`:
+    `WARNING: BRAILLE TOO TALL: {block}/{space} mm. The braille block is taller than the braille plate's usable height. Turn on auto_fit, raise braille_plate_height_mm to at least {height}, or remove a line.`
+- **Fix, in order of preference:**
+  1. Set `auto_fit` to `Yes` — this cannot happen in auto-fit mode.
+  2. Raise `sign_width_mm`, `letter_plate_height_mm`, or
+     `braille_plate_height_mm`.
+  3. Shorten or remove a line.
 
-**What you can see:** letters or dots running past the border, or overlapping it.
+The text-width check is estimated from character advances rather than measured,
+so treat a marginal case as marginal and look at the preview.
 
-**Fix, in order of preference:**
+### The braille sits too close to the border
 
-1. Set `auto_fit` to `Yes` — this cannot happen in auto-fit mode.
-2. Raise `sign_width_mm`, `letter_plate_height_mm`, or
-   `braille_plate_height_mm`.
-3. Shorten or remove a line.
+- **On MakerWorld:** no message. The braille fits inside the rails but sits
+  closer than `braille_clearance_mm` (9.5 mm, 3/8 in) to a rail or to the top
+  edge of the braille plate, which is hard to judge by eye.
+- **In desktop OpenSCAD:** the preview shows `BRAILLE TOO CLOSE TO BORDER`, and
+  the console prints one of these, for the height or for the width:
+  - `WARNING: BRAILLE TOO CLOSE TO BORDER: {block}/{space} mm. ADA 703.3.2 asks {clearance} mm of clear space. Turn on auto_fit, raise braille_plate_height_mm to at least {height}, or remove a line.`
+  - `WARNING: BRAILLE TOO CLOSE TO BORDER: {block}/{space} mm (longest line is {cells} cells). ADA 703.3.2 asks {clearance} mm of clear space. Turn on auto_fit, raise sign_width_mm to at least {width}, or shorten the line.`
+- **Fix, in order of preference:**
+  1. Set `auto_fit` to `Yes`.
+  2. Raise `braille_plate_height_mm` or `sign_width_mm`, whichever the console
+     names.
+  3. Shorten or remove a line.
 
-Note that the text-width check is estimated from character advances rather than
-measured, so treat a marginal case as marginal and look at the preview.
+### The letters are shorter than 16 mm
 
-### The characters are smaller than the standard allows
+- **On MakerWorld:** nothing — the sign renders fine. This is the problem you
+  are most likely to miss on MakerWorld, so check the number directly:
+  `letter_height_mm` must be at least **16** for the sign to match the published
+  figure. It defaults to 16.
+- **In desktop OpenSCAD:** the preview shows `LETTERS UNDER 16 MM`, and the
+  console prints
+  `NOTE: letter_height_mm is under 16 mm (5/8 in); ADA 703.2.5 asks raised characters at least that tall, measured on the capital I.`
+- **Fix:** raise `letter_height_mm` to 16 or more.
 
-**Console string:** `NOTE: ADA 703.2.5 requires raised characters at least
-15.9 mm (5/8 in) tall.`
+### The sign shows a sample's wording instead of yours
 
-**What you can see:** nothing — the sign renders fine. This is the warning you
-are most likely to miss on MakerWorld, so check the number directly:
-`char_height_mm` must be at least **15.9** for the sign to match the published
-figure. It defaults to 16.
+- **On MakerWorld:** no message. The letter plate reads RESTROOM, EXIT, STAIRS
+  or ROOM 101 whatever you typed, because a sample sign is picked.
+- **In desktop OpenSCAD:** the preview shows `SAMPLE SIGN IN USE` in orange, and
+  the console prints
+  `NOTE: sample_sign is {name}; text_line_N and braille_line_N are ignored.`
+- **Fix:** set `sample_sign` to `Type my own`.
+
+### Letter settings outside the ADA figures
+
+- **On MakerWorld:** nothing — the sign renders fine, so check the two dials
+  directly.
+- **In desktop OpenSCAD:** the preview shows nothing, and the console prints:
+  - `NOTE: letter_raise_mm is under 0.8 mm (1/32 in); ADA 703.2.1 asks raised characters at least that high.`
+    when `letter_raise_mm` is under 0.8.
+  - `NOTE: letter_line_spacing_pct is outside 135 to 170; ADA 703.2.8 asks the baselines of raised letter lines 135 to 170 percent of the letter height apart.`
+    when the sign has two or more lines of letters.
+- **Fix:** set `letter_raise_mm` to 0.8 or more, and `letter_line_spacing_pct`
+  from 135 to 170.
 
 ### The braille plate's fins fall over, or the bridges break mid-print
 
@@ -386,7 +524,8 @@ Lower `bridge_contact_mm` toward 0.2 mm, or reduce `bridge_width_mm` /
 
 Print the braille plate at 0.1 mm layers and slow the outer wall to 30–40 mm/s.
 If they are still rough, try `dot_shape` = `Cone`, which some printers render
-more cleanly than a dome.
+more cleanly than a dome. Cone is a pointed dot with a flat top, not the domed
+shape ADA 703.3.1 asks for, so use it only if `Rounded` prints badly.
 
 ### The two plates do not line up when mounted
 
@@ -437,7 +576,8 @@ The braille card and braille charm generators are in the Forge too, under the sa
 - [2010 ADA Standards for Accessible Design](https://archive.ada.gov/) — §703 is
   the signage section
 - [Branah braille translator](https://www.branah.com/braille-translator) — set
-  the output to Unicode braille and choose Grade 2 for signage
+  the output to Unicode Braille and choose Grade 2 Braille for signage; its own
+  page calls its Grade 2 a work in progress
 - [BANA *Size and Spacing of Braille Characters*](https://brailleauthority.org/size-and-spacing-braille-characters)
 - [The Rules of Unified English Braille (ICEB)](https://iceb.org/ueb.html)
 - [ISO 17049:2013 — Application of braille on signage, equipment and appliances](https://www.iso.org/standard/58090.html)
@@ -447,6 +587,8 @@ The braille card and braille charm generators are in the Forge too, under the sa
 - [Smith-Kettlewell *3D Printing for Blind & Low Vision Makers*](https://www.ski.org/technical-file/3d-printing-for-bvi-makers/)
   — printer and slicer guidance for the part of the workflow this model cannot
   cover
+- [The full guide](guides/full-guide.md) — every dial, warning and note of this
+  generator, for desktop OpenSCAD
 - [This project on GitHub](https://github.com/BrennenJohnston/braille-sign-openscad)
 - For a sign that will be installed in a public building, work with a
   **UEB-certified transcriber** and verify the installation against §703

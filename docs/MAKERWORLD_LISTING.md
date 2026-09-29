@@ -1,7 +1,6 @@
 # MakerWorld Listing — Braille Sign STL Generator
 
-Status: draft — ready to upload once the license pick is recorded and the gallery
-photos are shot.
+Status: ready to upload once the gallery photos are shot.
 
 Written to the shared
 [Accessible MakerWorld Documentation Standard](https://github.com/BrennenJohnston/accessible-makerworld-doc-standard/blob/main/ACCESSIBLE_MAKERWORLD_DOC_STANDARD.md).
@@ -15,28 +14,28 @@ Written to the shared
 | Model title | `Braille Sign Generator - Two-Part Tactile Room Signs, ADA 703 Dimensions (Parametric)` |
 | Designer | Brennen Johnston |
 | Category | Education > Other Education Models |
-| License | a CC NonCommercial variant — see below |
+| License | CC BY-NC 4.0 (the repository is PolyForm Noncommercial 1.0.0; MakerWorld does not offer it; the owner's pick, 2026-09-28, Q-10) |
 | Upload file | `Braille_Sign_STL_Generator.scad` — this one file only |
 | Tags | `braille`, `accessibility`, `assistive-technology`, `blindness`, `vision-impairment`, `tactile`, `signage`, `ada`, `room-sign`, `wayfinding`, `customizable`, `parametric`, `openscad` |
 | External link 1 | <https://openscad-assistive-forge.pages.dev/?example=braille-sign> |
 | External link 2 | <https://github.com/BrennenJohnston/braille-sign-openscad> |
 
-The repository is licensed PolyForm Noncommercial 1.0.0 and MakerWorld does not
-offer PolyForm in its license list, so the pick has to be the closest Creative
-Commons NonCommercial variant. Make that choice deliberately at upload time
-rather than accepting the form's default — the licensing gate later in this
-document sets out what is at stake. The first external link is the accessible
-browser version of the same generator; the second is the source repository.
+MakerWorld's license list does not offer PolyForm Noncommercial 1.0.0, the
+repository's license, so the owner chose CC BY-NC 4.0 (Creative Commons
+Attribution-NonCommercial 4.0 International) on 2026-09-28. Pick it deliberately
+at upload time rather than accepting the form's default. The first external link
+is the accessible browser version of the same generator; the second is the source
+repository.
 
 ## Summary
 
-A parametric generator for two-part tactile signs following the 2010 ADA
-Standards §703 dimensional figures: a letter plate with raised uppercase
-characters that prints flat, and a braille plate carrying the same wording that
-prints leaning back at 75° for the crispest dots. Type your wording, paste
-pre-translated braille, and both plates size themselves to fit. Their split
-raised border joins into one continuous tactile frame when the plates are
-mounted with the letters above the braille.
+A parametric generator for two-part tactile room signs, read by touch or by
+sight, following the 2010 ADA Standards §703 dimensional figures: a letter plate
+with raised uppercase characters that prints flat, and a braille plate carrying
+the same wording that prints leaning back at 75° for the crispest dots. Pick one
+of four sample signs, or type your own wording and paste pre-translated braille,
+and both plates size themselves to fit. Mounted touching, letters above braille,
+their split raised border joins into one continuous tactile frame.
 
 This tool does **not** guarantee ADA compliance — see the note in the
 description.
@@ -54,111 +53,127 @@ prints flat, letters up, and it carries the top and side rails of the sign's
 raised border.
 
 The **braille plate** carries the same wording in braille. It prints leaning back
-75 degrees on modelled break-away support fins, and it carries the bottom and
+75 degrees on modeled break-away support fins, and it carries the bottom and
 side rails of the border.
 
-Mounted with the letters above the braille, the two sets of border rails line up
-into one continuous frame — which is both how the sign should look and a tactile
+Mounted touching, letters above braille, the two sets of border rails join into
+one continuous frame — which is both how the sign should look and a tactile
 boundary a hand can find before it starts reading.
 
-At the shipped defaults the sign is 160 millimetres wide with a 70 millimetre
-letter plate and a 40 millimetre braille plate, both 3 millimetres thick. Turn on
-auto-fit (it is on by default) and those become minimums: the plates grow to fit
+At the shipped defaults the sign is 160 millimeters wide with a 70 millimeter
+letter plate and a 40 millimeter braille plate, both 3 millimeters thick.
+Auto-fit is on by default, so those become minimums: the plates grow to fit
 whatever wording you enter, up to six lines.
 
-**ADA note — read this before you print a set**
+> **ADA note.** The defaults follow the published §703 figures, but this tool
+> does **not** guarantee compliance. Real signage has requirements this
+> generator does not model — mounting height and location, contrast, glare,
+> character width ratios, and the 9.5 mm (3/8 in) minimum braille offset below
+> the raised text. Verify against the standard before installing.
 
-The defaults follow the published §703 figures, but this tool does **not**
-guarantee compliance. Real signage has requirements this generator does not model:
-mounting height and location (§703.4), contrast and glare (§703.5), character
-width ratios, and the 9.5 millimetre (3/8 inch) minimum braille offset below the
-raised text (§703.3.2), which you set when you mount the two plates. Verify
-against the standard before installing.
+With the plates mounted touching, the braille sits about 43 millimeters below the
+raised letters on the default sign, more than the 9.5 millimeters (3/8 inch) that
+§703.3.2 asks.
 
-Also: an automatic braille translator is not a certified transcriber. For a sign
-going into a public building, have the braille checked by a UEB-certified
-transcriber first.
+**An automatic translator is not a certified transcriber.** For a sign going into
+a public building, have the braille checked by a transcriber certified in Unified
+English Braille (UEB) first.
 
 **What dimensions the defaults follow**
 
 | Default | §703 figure |
 |---|---|
-| Character height 16 mm | §703.2.5, minimum 15.9 mm (5/8 in) |
-| Character relief 0.8 mm | §703.2.1, minimum 0.8 mm (1/32 in) |
-| Line spacing 135% of character height | §703.2.8 |
+| Character height 16.0 mm, on the capital I | §703.2.5, 16 mm (5/8 in) minimum |
+| Character relief 0.8 mm | §703.2.1, 0.8 mm (1/32 in) minimum |
+| Line spacing 135% of character height | §703.2.8, 135 to 170% |
 | Uppercase characters | §703.2.2 |
 | Liberation Sans, sans-serif | §703.2.3 |
-| Braille dot 1.6 mm base, 0.7 mm tall, domed | §703.3, and the ADA / ISO 17049 overlap |
-| Cell spacing 7.0 mm, line spacing 10.0 mm, dot spacing 2.5 mm | BANA *Size and Spacing of Braille Characters* |
+| Braille dot 1.6 mm base, 0.7 mm tall, domed | §703.3.1, and the ADA / ISO 17049 overlap |
+| Cell spacing 6.5 mm, line spacing 10.0 mm, dot spacing 2.5 mm | §703.3.1, and BANA *Size and Spacing of Braille Characters* |
+| Braille 9.5 mm from the border | §703.3.2 |
 
-The generator warns if you drop the character height below 15.9 millimetres. The
-slider goes down to 12 because a smaller sign is sometimes what you need — but
-below 15.9 the sign no longer matches the published figure and should not be
+Below 16 millimeters, desktop OpenSCAD flags the letters in its preview and its
+console; MakerWorld shows neither, so keep `letter_height_mm` at 16 or more. The
+slider goes down to 12 because a smaller sign has uses outside the ADA Standards,
+but below 16 the sign no longer matches the published figure and should not be
 described as following it.
 
 **What you need to supply**
 
 Your wording as plain text, and the same wording as pre-translated Unicode
-braille. MakerWorld's customizer cannot translate for you.
+braille, because MakerWorld's customizer cannot translate. A sample sign needs
+neither: it brings its own.
 
-Translate at https://www.branah.com/braille-translator, choose **Grade 2**
-(contracted braille — the convention for permanent signage), and make sure the
-output is set to **Unicode braille** (dot patterns like ⠠⠗⠕⠕⠍) rather than
-ASCII/BRF braille (which looks like ordinary letters). Translate each line
-separately so the braille lines match the text lines.
+Translate at the Branah braille translator
+(https://www.branah.com/braille-translator): choose **Grade 2 Braille**
+(contracted braille, which §703.3 asks for on signs) and **Unicode Braille**
+output, which looks like dot patterns such as ⠑⠭⠊⠞ (Exit), rather than
+ASCII or BRF braille, which looks like ordinary letters. Branah's own page says
+its Grade 2 is still a work in progress, so check what it gives you. Type each
+line in lowercase, keeping a capital only at the start of a sentence and for
+names, single letters, initials and acronyms. Translate each line separately so
+the braille lines match the text lines.
 
-If you would rather not translate by hand, the accessible browser version linked
-above does it for you on your own device, with Grade 2 as its default.
+If you would rather skip the translator, the accessible browser version linked
+above translates for you on your own device, with UEB Grade 2 as its default.
 
 **Using the customizer**
 
-1. Type your wording into `sign_text_1` through `sign_text_6` under **Sign Text -
-   Raised Letters**.
-2. Paste the matching Unicode braille into `Line_1` through `Line_6` under **Text
-   Input - Pre-Translated Braille**. The fields pair up: `sign_text_2` and
-   `Line_2` are the same line of the sign in two scripts.
-3. Leave `auto_fit` on `Yes`. The plates grow to fit both scripts and the size
-   sliders become minimums.
-4. `sign_part` is `Both` by default, laying both plates side by side on the bed.
-   Set it to `Letter plate` or `Braille plate` to export one at a time — which you
-   probably want, because the two plates need different layer heights.
-5. Leave `print_orientation` on `Angled` and `face_angle_deg` on 75. This affects
-   the braille plate only; the letter plate always prints flat.
-6. Generate, render, download.
+1. Under **Step 1 - Pick a sample sign or type your own**, pick a sample sign in
+   `sample_sign`, or leave it on `Type my own`. A sample brings its own wording
+   and braille: skip to step 4.
+2. With `Type my own`, type your wording into `text_line_1` through
+   `text_line_6`, one line of the sign per dial.
+3. Under **Step 2 - Braille, pasted from a translator**, paste the matching
+   Unicode braille into `braille_line_1` through `braille_line_6`. The dials
+   pair up: `text_line_2` and `braille_line_2` are the same line of the sign in
+   two scripts.
+4. Under **Step 3 - What to export**, set `sign_part` to `Letter plate`: the two
+   plates need different layer heights, so you export them one at a time. Leave
+   `print_orientation` on `Angled`; it affects the braille plate only.
+5. Under **Step 4 - Size**, leave `auto_fit` on `Yes`. The plates grow to fit
+   both scripts and the size sliders become minimums.
+6. Generate the model.
+7. Download the STL: this is the letter plate.
+8. Set `sign_part` to `Braille plate`.
+9. Generate the model again.
+10. Download the STL: this is the braille plate.
 
-**Important: this model reports problems in the OpenSCAD console, and MakerWorld
-does not show you a console.** Leaving `auto_fit` on `Yes` prevents every
-size-overflow problem it would warn about. The one to watch for by eye: if a
-braille cell renders as a blank patch with no dots, that `Line_N` field is not
-Unicode braille. The full symptom-by-symptom list is in the quick start guide
-linked at the end.
+**Important: MakerWorld does not show this model's warnings.** Desktop OpenSCAD
+shows each problem as red words beside the sign in its preview and as a line in
+its console; MakerWorld's customizer shows neither. Leaving `auto_fit` on `Yes`
+prevents every size problem it would warn about. Two to watch for by eye: a
+braille line with blank cells or no dots at all means that line is not Unicode
+braille, and a sign that shows a sample's wording instead of yours means
+`sample_sign` is not on `Type my own`. The quick start guide linked below lists
+every symptom.
 
 **Print settings**
 
 The two plates want different settings, so print them as two jobs.
 
-*Letter plate:* flat, letters up. 0.2 millimetre layers are fine — the characters
-are 0.8 millimetres tall and 16 millimetres across, coarse features that print
+*Letter plate:* flat, letters up. 0.2 millimeter layers are fine — the characters
+rise 0.8 millimeters and stand 16 millimeters tall, coarse features that print
 cleanly at ordinary resolution. No supports.
 
-*Braille plate:* exactly as modeled, leaning back 75 degrees. 0.1 millimetre
-layers. Braille standards cap dot height at 0.9 millimetres, so layer height is
+*Braille plate:* exactly as modeled, leaning back 75 degrees. 0.1 millimeter
+layers. Braille standards cap dot height at 0.9 millimeters, so layer height is
 essentially the only lever on how smooth a dot feels. No slicer supports — the
-fins are already modelled with a brim underneath. Slow the outer wall to 30–40
-millimetres per second; a thin leaning plate rings badly at speed, and input
+fins are already modeled with a brim underneath. Slow the outer wall to 30–40
+millimeters per second; a thin leaning plate rings badly at speed, and input
 shaping helps a lot. After printing, flex the fins off the back and deburr the
 small nubs the bridges leave.
 
 If the fins fall over or the bridges break mid-print, raise `bridge_contact_mm`
-toward 0.4 millimetres or add more `bridge_count`. If the fins will not snap off
-cleanly, lower `bridge_contact_mm` toward 0.2 millimetres.
+toward 0.4 millimeters or add more `bridge_count`. If the fins will not snap off
+cleanly, lower `bridge_contact_mm` toward 0.2 millimeters.
 
 PLA and PETG both work.
 
 **Contrast.** ADA signage requires characters that contrast with their
-background, and a single-colour print does not. If your printer can change
+background, and a single-color print does not. If your printer can change
 filament mid-print, the raised characters and the border are the parts to change
-colour. Otherwise plan to paint them.
+color. Otherwise plan to paint them.
 
 **Why the sign is two plates**
 
@@ -170,8 +185,8 @@ Orientation on the Readability and Comfort of 3D-Printed Braille," CHI 2024
 (https://doi.org/10.1145/3613904.3642719).
 
 That finding applies to braille dots and not to raised letters. A braille dot is
-1.6 millimetres wide, so a layer seam across its crown is a large fraction of the
-feature and a reading finger feels it. A 16 millimetre raised character is coarse
+1.6 millimeters wide, so a layer seam across its crown is a large fraction of the
+feature and a reading finger feels it. A 16 millimeter raised character is coarse
 enough that seams do not matter, and printing it flat gives a cleaner top face
 than any angle would.
 
@@ -193,7 +208,13 @@ It translates plain English to braille on your device with liblouis (UEB Grade 2
 by default, which is the signage convention), is built for screen readers and
 keyboard navigation, saves presets, works offline once installed, and names your
 downloads after their content. Use it if the customizer here is difficult with
-your screen reader. Nothing leaves your device in either tool.
+your screen reader. The Forge renders on your own device; MakerWorld renders on
+its servers.
+
+**Quick start guide**
+
+Step-by-step help, and what each problem looks like on MakerWorld:
+https://github.com/BrennenJohnston/braille-sign-openscad/blob/main/docs/MAKERWORLD_QUICK_START.md
 
 **Credits**
 
@@ -220,8 +241,8 @@ result.
 |---------|--------------|---------------|
 | Layer height | 0.2 mm | 0.1 mm |
 | Material | PLA Basic or PETG | PLA Basic or PETG |
-| Supports | none | none (fins modelled) |
-| Brim | not needed | optional (one is modelled per fin) |
+| Supports | none | none (fins modeled) |
+| Brim | not needed | optional (one is modeled per fin) |
 | Orientation | as modeled, flat | as modeled, leaning 75° |
 | Outer wall speed | normal | 30–40 mm/s |
 
@@ -250,12 +271,12 @@ result.
 
 5. **Dot close-up.** Macro of a braille cell on the finished plate.
    **Alt text:** Close-up of raised braille dots on the sign plate, each dot a
-   smooth dome about 1.6 millimetres wide and 0.7 millimetres tall.
+   smooth dome about 1.6 millimeters wide and 0.7 millimeters tall.
 
 6. **Character height with a scale.** Ruler or calipers against a raised
    character.
    **Alt text:** Calipers measuring a raised character on the letter plate at
-   about 16 millimetres tall.
+   about 16 millimeters tall.
 
 7. **Multi-line sign.** A three- or four-line example, both plates.
    **Alt text:** A two-part printed sign with three lines of raised text above
@@ -267,12 +288,12 @@ profile.
 
 ## Pre-publish checklist
 
-- [ ] **License pick recorded.** The repo is PolyForm Noncommercial 1.0.0, which
-      MakerWorld does not offer. Choose the closest CC NonCommercial variant
-      deliberately and note the choice here.
-- [ ] **ADA disclaimer present in the description.** Non-negotiable. The
-      paragraph is written above — keep it, and keep it near the top rather than
-      buried at the end.
+- [x] **License pick recorded.** CC BY-NC 4.0, the owner's pick on 2026-09-28
+      (Q-10): MakerWorld does not offer the repository's PolyForm Noncommercial
+      1.0.0. Select it deliberately on the upload form.
+- [ ] **ADA disclaimer present in the description.** Non-negotiable. The note is
+      written above — keep it, and keep it near the top rather than buried at the
+      end.
 - [ ] **Single-file requirement verified.** Run `pytest tests -v` —
       `test_source_guards.py::TestMakerWorldSingleFile` asserts there is no
       `include`/`use` in the `.scad`, and the same file pins the font to
@@ -285,14 +306,15 @@ profile.
       missing font renders as nothing, and there is no console to tell you why.
 - [ ] **Creator Portal smoke test.** Upload, render `sign_part = Both` at the
       defaults, then render each plate separately and confirm the two exports have
-      matching widths.
-- [ ] **Console-blindness acknowledged in the description.** Because this model
-      has no on-model warning text, the description must tell the user to leave
-      `auto_fit` on and what to look for in the preview. That paragraph is written
-      above — keep it.
+      matching widths. Pick one sample sign in `sample_sign` and confirm its
+      braille dots appear.
+- [ ] **Warning-blindness acknowledged in the description.** MakerWorld shows
+      neither the console nor the desktop preview's red warning words, so the
+      description must tell the user to leave `auto_fit` on and what to look for
+      on the model. That paragraph is written above — keep it.
 - [ ] **Every gallery image has alt text pasted into MakerWorld's field.**
 - [ ] **Cover photo is a real printed object,** and ideally a mounted one, since
       mounting is the part the generator cannot do for the user.
-- [ ] **Quick start linked from the description** — either the GitHub link to
-      [`MAKERWORLD_QUICK_START.md`](MAKERWORLD_QUICK_START.md) or its content
-      pasted into the instructions area.
+- [ ] **Quick start linked from the description** — the description carries the
+      GitHub link to [`MAKERWORLD_QUICK_START.md`](MAKERWORLD_QUICK_START.md);
+      keep it, or paste the guide's content into the instructions area.
