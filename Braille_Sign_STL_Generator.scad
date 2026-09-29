@@ -187,6 +187,8 @@ brim_width_mm = 2.0;          // [0:0.25:25]
 brim_thickness_mm = 0.2;      // [0.1:0.05:3]
 
 /* [Advanced - Warnings and rendering] */
+// Show problems as red text beside the sign in the preview. The text is never part of an export.
+show_warnings = "Yes";        // [Yes, No]
 // How smooth the rounded dot domes are. High is smoother but renders slower.
 render_quality = "Medium";    // [Low, Medium, High]
 // How many flat sides draw each dot's round outline, for both dot shapes. Higher is smoother and slower.
@@ -204,6 +206,7 @@ angled_on = (print_orientation == "Angled");
 fins_on = angled_on && ((support_fins == "Yes") || (support_fins == true));
 border_on = (add_border == "Yes");
 uppercase_on = (force_uppercase == "Yes");
+warnings_on = (show_warnings == "Yes");
 
 show_letter_plate  = (sign_part == "Both") || (sign_part == "Letter plate");
 show_braille_plate = (sign_part == "Both") || (sign_part == "Braille plate");
@@ -687,57 +690,113 @@ module braille_plate_angled() {
 // Each overflow warning reports the measured size against the space available,
 // matching the counted "TEXT TOO LONG: n/capacity" style the cylinder generator
 // uses. "Too tall" on its own leaves you guessing how much to add; the numbers
-// say it outright.
+// say it outright. Each condition is named once so the console lines here and
+// the preview text (PREVIEW WARNINGS) can never disagree.
+// Auto-fit sizes the braille plate to exactly the clearance; FIT_TOLERANCE keeps
+// floating-point rounding from reporting that exact fit as too close.
+FIT_TOLERANCE = 1e-6;
+_warn_text_tall    = text_rows > 0 && _letter_block_h > _letter_inner_h;
+_warn_braille_tall = braille_rows > 0 && _braille_block_total_h > _braille_inner_h;
+_warn_braille_wide = braille_max_len > 0 && _braille_block_total_w > _inner_w;
+_warn_close_tall   = braille_rows > 0 && !_warn_braille_tall
+    && _braille_block_total_h > _braille_inner_h - 2 * braille_clearance_mm + FIT_TOLERANCE;
+_warn_close_wide   = braille_max_len > 0 && !_warn_braille_wide
+    && _braille_block_total_w > _inner_w - 2 * braille_clearance_mm + FIT_TOLERANCE;
+_warn_text_wide    = _est_text_w > _inner_w;
+_bad_braille_lines = [for (i = [0 : _line_count - 1]) if (has_invalid_chars(_braille_lines[i])) i + 1];
+_short_letters     = text_rows > 0 && letter_height_mm < 16;
+
 echo(str("Braille sign: ", text_rows, " text line(s), ", braille_rows,
-         " braille line(s), ", sign_w, " mm wide, plates ",
-         letter_plate_h, " + ", braille_plate_h, " mm tall"));
+         " braille line(s), ", mm1(sign_w), " mm wide, plates ",
+         mm1(letter_plate_h), " + ", mm1(braille_plate_h), " mm tall"));
 if (text_rows > 0)
     echo(str("Text width estimate: ", mm1(_est_text_w), " mm"));
-if (text_rows > 0 && _letter_block_h > _letter_inner_h)
+if (_warn_text_tall)
     echo(str("WARNING: TEXT TOO TALL: ", mm1(_letter_block_h), "/", mm1(_letter_inner_h),
              " mm. The raised text block is taller than the letter plate's usable height. ",
              "Turn on auto_fit, raise letter_plate_height_mm to at least ",
              mm1(_letter_block_h + 2 * _border_inset), ", or remove a line."));
-if (braille_rows > 0 && _braille_block_total_h > _braille_inner_h)
+if (_warn_braille_tall)
     echo(str("WARNING: BRAILLE TOO TALL: ", mm1(_braille_block_total_h), "/", mm1(_braille_inner_h),
              " mm. The braille block is taller than the braille plate's usable height. ",
              "Turn on auto_fit, raise braille_plate_height_mm to at least ",
              mm1(_braille_block_total_h + 2 * _border_inset), ", or remove a line."));
-if (braille_max_len > 0 && _braille_block_total_w > _inner_w)
+if (_warn_braille_wide)
     echo(str("WARNING: BRAILLE TOO WIDE: ", mm1(_braille_block_total_w), "/", mm1(_inner_w),
              " mm (longest line is ", braille_max_len, " cells). ",
              "Turn on auto_fit, raise sign_width_mm to at least ",
              mm1(_braille_block_total_w + 2 * _border_inset), ", or shorten the line."));
-// Auto-fit sizes the braille plate to exactly the clearance; FIT_TOLERANCE keeps
-// floating-point rounding from reporting that exact fit as too close.
-FIT_TOLERANCE = 1e-6;
-if (braille_rows > 0 && _braille_block_total_h <= _braille_inner_h
-    && _braille_block_total_h > _braille_inner_h - 2 * braille_clearance_mm + FIT_TOLERANCE)
+if (_warn_close_tall)
     echo(str("WARNING: BRAILLE TOO CLOSE TO BORDER: ", mm1(_braille_block_total_h), "/",
              mm1(_braille_inner_h - 2 * braille_clearance_mm), " mm. ADA 703.3.2 asks ",
              braille_clearance_mm, " mm of clear space. ",
              "Turn on auto_fit, raise braille_plate_height_mm to at least ",
              mm1(_braille_block_total_h + 2 * _braille_pad), ", or remove a line."));
-if (braille_max_len > 0 && _braille_block_total_w <= _inner_w
-    && _braille_block_total_w > _inner_w - 2 * braille_clearance_mm + FIT_TOLERANCE)
+if (_warn_close_wide)
     echo(str("WARNING: BRAILLE TOO CLOSE TO BORDER: ", mm1(_braille_block_total_w), "/",
              mm1(_inner_w - 2 * braille_clearance_mm), " mm (longest line is ",
              braille_max_len, " cells). ADA 703.3.2 asks ", braille_clearance_mm,
              " mm of clear space. Turn on auto_fit, raise sign_width_mm to at least ",
              mm1(_braille_block_total_w + 2 * _braille_pad), ", or shorten the line."));
-if (_est_text_w > _inner_w)
+if (_warn_text_wide)
     echo(str("WARNING: TEXT TOO WIDE: ", mm1(_est_text_w), "/", mm1(_inner_w),
              " mm (estimated from character advances, so treat it as approximate). ",
              "Turn on auto_fit, raise sign_width_mm to at least ",
              mm1(_est_text_w + 2 * _border_inset), ", or shorten the line."));
-for (i = [0:_line_count-1])
-    if (has_invalid_chars(_braille_lines[i]))
-        echo(str("WARNING: braille_line_", i + 1, " contains non-braille characters. Use Unicode braille (U+2800-U+28FF)."));
+for (n = _bad_braille_lines)
+    echo(str("WARNING: braille_line_", n, " contains non-braille characters. Use Unicode braille (U+2800-U+28FF)."));
 if (_sample_on)
     echo(str("NOTE: sample_sign is ", sample_sign, "; text_line_N and braille_line_N are ignored."));
-if (letter_height_mm < 16)
+if (_short_letters)
     echo("NOTE: letter_height_mm is under 16 mm (5/8 in); ADA 703.2.5 asks raised characters at least that tall, measured on the capital I.");
+if (text_rows > 0 && letter_raise_mm < 0.8)
+    echo("NOTE: letter_raise_mm is under 0.8 mm (1/32 in); ADA 703.2.1 asks raised characters at least that high.");
+if (text_rows > 1 && (letter_line_spacing_pct < 135 || letter_line_spacing_pct > 170))
+    echo("NOTE: letter_line_spacing_pct is outside 135 to 170; ADA 703.2.8 asks the baselines of raised letter lines 135 to 170 percent of the letter height apart.");
 echo("NOTE: ADA defaults are recommendations only - this tool does not guarantee compliance. Mount the braille plate at least 9.5 mm (3/8 in) below the raised text.");
+
+// =============================================================================
+// PREVIEW WARNINGS
+// =============================================================================
+// The problems above as text beside the sign in the preview (F5). The `%`
+// background modifier keeps it out of every render (F6) and export, so it can
+// never reach an STL; some OpenSCAD builds draw it gray instead of red.
+// MakerWorld shows neither this text nor the console.
+WARNING_TEXT_SIZE  = 5;
+WARNING_TEXT_DEPTH = 2;
+WARNING_STACK_GAP  = 8;
+
+// The lowest line sits 10 mm past the far (+Y) edge of whatever is shown.
+_warn_y = (show_letter_plate && show_braille_plate) ? plate_gap_mm / 2 + letter_plate_h + 10
+        : show_letter_plate ? letter_plate_h / 2 + 10
+        : angled_on ? bp_base_run / 2 + 10
+        : braille_plate_h / 2 + 10;
+
+_warn_slots = concat(
+    [for (n = _bad_braille_lines) [str("NOT BRAILLE IN LINE ", n), "red"]],
+    _warn_text_wide ? [["TEXT TOO WIDE", "red"]] : [],
+    _warn_text_tall ? [["TEXT TOO TALL", "red"]] : [],
+    _warn_braille_wide ? [["BRAILLE TOO WIDE", "red"]] : [],
+    _warn_braille_tall ? [["BRAILLE TOO TALL", "red"]] : [],
+    (_warn_close_tall || _warn_close_wide) ? [["BRAILLE TOO CLOSE TO BORDER", "red"]] : [],
+    _short_letters ? [["LETTERS UNDER 16 MM", "red"]] : [],
+    _sample_on ? [["SAMPLE SIGN IN USE", "orange"]] : []);
+
+// Slot k of n, stacked as lines of text so the first message is the top line
+// in a view from above.
+module warning_slot(k, n, msg, c = "red") {
+    translate([0, _warn_y + (n - 1 - k) * WARNING_STACK_GAP, plate_thickness_mm])
+        %color(c)
+            linear_extrude(height = WARNING_TEXT_DEPTH)
+                text(msg, size = WARNING_TEXT_SIZE, font = "Liberation Sans",
+                     halign = "center", valign = "center");
+}
+
+module warnings_3d() {
+    if (warnings_on)
+        for (k = [0 : 1 : len(_warn_slots) - 1])
+            warning_slot(k, len(_warn_slots), _warn_slots[k][0], _warn_slots[k][1]);
+}
 
 // =============================================================================
 // MAIN RENDERING
@@ -761,5 +820,7 @@ if (show_letter_plate && show_braille_plate) {
     if (angled_on) braille_plate_angled();
     else braille_plate_flat();
 }
+
+warnings_3d();
 
 // End of file
