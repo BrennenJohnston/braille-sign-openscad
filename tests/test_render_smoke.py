@@ -16,6 +16,7 @@ density, not the body count.
 License: PolyForm Noncommercial 1.0.0
 """
 
+import re
 from pathlib import Path
 
 import pytest
@@ -86,6 +87,43 @@ def test_sign_letter_plate(runner, tmp_path):
         {"sign_part": "Letter plate"},
     )
     assert_printable(mesh, bodies=1)
+
+
+@pytest.mark.requires_openscad
+def test_warnings_never_exported(runner, tmp_path):
+    """
+    show_warnings draws problems as preview-only text. With a warning firing
+    (a braille line that is not braille), the export is the same two solids
+    with the warnings on and off: the text never reaches the STL.
+    """
+    source = SCAD_FILE.read_text(encoding="utf-8")
+    assert re.search(r'^show_warnings\s*=\s*"(Yes|No)"\s*;', source, re.MULTILINE), (
+        "show_warnings is not a Customizer dial"
+    )
+    meshes = {}
+    for choice in ("Yes", "No"):
+        output = tmp_path / f"warnings_{choice}.stl"
+        result = runner.generate_stl(
+            SCAD_FILE,
+            output,
+            parameters={
+                "render_quality": "Medium",
+                "braille_line_1": "Room 101",
+                "show_warnings": choice,
+            },
+        )
+        assert result.success, f"render failed (rc={result.returncode}):\n{result.stderr}"
+        assert "contains non-braille characters" in result.stdout + result.stderr, (
+            "the test sign must fire a warning"
+        )
+        meshes[choice] = trimesh.load(output, force="mesh")
+    on, off = meshes["Yes"], meshes["No"]
+    assert on.body_count == off.body_count == 2, (
+        f"bodies with warnings on {on.body_count}, off {off.body_count}; expected 2"
+    )
+    assert round(on.volume, 6) == round(off.volume, 6), "the warning text changed the volume"
+    assert round(on.area, 6) == round(off.area, 6), "the warning text changed the area"
+    assert (on.bounds.round(6) == off.bounds.round(6)).all(), "the warning text changed the bounds"
 
 
 if __name__ == "__main__":

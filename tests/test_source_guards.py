@@ -105,6 +105,52 @@ class TestSignStructure:
         )
 
 
+# The ten dials that shape or space the braille dots, with the slider range
+# each must span. Dot base diameter, dot height and the three spacings are
+# ADA 703.3.1 (Table 703.3.1, its printed metric figures); the dome, base
+# height and cone top limits are the plan's choices inside that table.
+TACTILE_SLIDERS = {
+    "rounded_dot_base_diameter": (1.5, 1.6),
+    "rounded_dot_dome_diameter": (1.0, 1.6),
+    "rounded_dot_base_height": (0.1, 0.5),
+    "rounded_dot_dome_height": (0.2, 0.8),
+    "cone_dot_base_diameter": (1.5, 1.6),
+    "cone_dot_height": (0.6, 0.9),
+    "cone_dot_top_diameter": (0.3, 1.0),
+    "braille_dot_spacing_mm": (2.3, 2.5),
+    "braille_cell_spacing_mm": (6.1, 7.6),
+    "braille_line_spacing_mm": (10.0, 10.2),
+}
+
+
+class TestTactileRanges:
+    """The braille dot dials cannot leave ADA 703.3.1 from the Customizer."""
+
+    def test_tactile_sliders_inside_the_ada_table(self, scad_content):
+        """
+        Each tactile dial's slider spans exactly its range and its default
+        sits inside it. OpenSCAD does not check a default against its own
+        slider, and a -D value or a preset skips the slider altogether: the
+        asserts in the .scad catch those.
+        """
+        problems = []
+        for name, (low, high) in TACTILE_SLIDERS.items():
+            match = re.search(
+                rf"^{name}\s*=\s*([-\d.]+)\s*;\s*//\s*\[([-\d.]+):([-\d.]+):([-\d.]+)\]",
+                scad_content,
+                re.MULTILINE,
+            )
+            if not match:
+                problems.append(f"{name}: no numeric slider found")
+                continue
+            default, s_min, _step, s_max = (float(g) for g in match.groups())
+            if (s_min, s_max) != (low, high):
+                problems.append(f"{name}: slider {s_min} to {s_max}, must be {low} to {high}")
+            if not low <= default <= high:
+                problems.append(f"{name}: default {default} is outside {low} to {high}")
+        assert not problems, "tactile sliders outside ADA 703.3.1:\n" + "\n".join(problems)
+
+
 class TestCustomizerLayout:
     """The Customizer reads top to bottom: four Steps, then Advanced tabs."""
 

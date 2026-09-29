@@ -123,7 +123,7 @@ border_height_mm = 0.8;       // [0.2:0.1:2]
 /* [Advanced - Raised letters, ADA 703.2] */
 // Turn a to z into capital letters, as ADA 703.2.2 asks. Accented letters stay as typed.
 force_uppercase = "Yes";      // [Yes, No]
-// Height of the raised capital letters (mm). ADA 703.2.5 asks 15.9 mm (5/8 in) or more.
+// Height of the raised capital letters (mm). ADA 703.2.5 asks 16 mm (5/8 in) or more.
 letter_height_mm = 16;        // [12:0.5:50]
 // How far the letters rise off the plate (mm). ADA 703.2.1 asks 0.8 mm (1/32 in) or more.
 letter_raise_mm = 0.8;        // [0.4:0.05:2]
@@ -133,30 +133,32 @@ letter_line_spacing_pct = 135; // [100:5:200]
 letter_spacing_factor = 1.1;  // [0.8:0.05:2]
 
 /* [Advanced - Braille spacing, ADA 703.3] */
-// Center-to-center distance between braille cells (mm). ADA 703.3.1 asks 6.1 to 7.6.
-braille_cell_spacing_mm = 7.0; // [2:0.01:15]
+// Center-to-center distance between braille cells (mm). ADA 703.3.1 asks 6.1 to 7.6; 6.5 is inside ISO 17049 too.
+braille_cell_spacing_mm = 6.5; // [6.1:0.1:7.6]
 // Center-to-center distance between braille lines (mm). ADA 703.3.1 asks 10.0 to 10.2.
-braille_line_spacing_mm = 10.0; // [5:0.01:25]
+braille_line_spacing_mm = 10.0; // [10.0:0.1:10.2]
 // Center-to-center distance between the dots of one cell (mm). ADA 703.3.1 asks 2.3 to 2.5.
-braille_dot_spacing_mm = 2.5; // [1:0.01:5]
+braille_dot_spacing_mm = 2.5; // [2.3:0.1:2.5]
+// Clear space between the braille and the border rail or plate edge (mm). ADA 703.3.2 asks 9.5 mm (3/8 in) or more.
+braille_clearance_mm = 9.5;   // [9.5:0.5:20]
 
 /* [Advanced - Braille dot shape] */
-// A rounded dome dot, the ADA profile (Rounded), or a pointed dot with a flat top (Cone).
+// Rounded is the domed dot ADA 703.3.1 asks for. Cone is a pointed dot with a flat top, not the ADA shape: use it only if Rounded prints badly.
 dot_shape = "Rounded";        // [Rounded, Cone]
 // Rounded dots: diameter where the dot meets the plate (mm). ADA 703.3.1 asks 1.5 to 1.6.
-rounded_dot_base_diameter = 1.6; // [0.5:0.01:3]
-// Rounded dots: height of the base below the dome (mm). Base plus dome height is the dot height.
-rounded_dot_base_height   = 0.35; // [0:0.01:2]
-// Rounded dots: diameter of the dome where it sits on the base (mm). Keep it no wider than the base.
-rounded_dot_dome_diameter = 1.4; // [0.5:0.01:3]
-// Rounded dots: height of the dome (mm). ADA 703.3.1 asks 0.6 to 0.9 mm for the whole dot.
-rounded_dot_dome_height   = 0.35; // [0.1:0.01:2]
+rounded_dot_base_diameter = 1.6; // [1.5:0.01:1.6]
+// Rounded dots: height of the base below the dome (mm). Base plus dome must total 0.6 to 0.9, the ADA 703.3.1 dot height.
+rounded_dot_base_height   = 0.35; // [0.1:0.01:0.5]
+// Rounded dots: diameter of the dome where it sits on the base (mm). It may not be wider than the base.
+rounded_dot_dome_diameter = 1.4; // [1.0:0.01:1.6]
+// Rounded dots: height of the dome (mm). Base plus dome must total 0.6 to 0.9, the ADA 703.3.1 dot height.
+rounded_dot_dome_height   = 0.35; // [0.2:0.01:0.8]
 // Cone dots: diameter where the dot meets the plate (mm). ADA 703.3.1 asks 1.5 to 1.6.
-cone_dot_base_diameter = 1.5; // [0.5:0.01:3]
+cone_dot_base_diameter = 1.5; // [1.5:0.01:1.6]
 // Cone dots: height of the dot (mm). ADA 703.3.1 asks 0.6 to 0.9.
-cone_dot_height        = 0.8; // [0.3:0.01:2]
-// Cone dots: diameter of the small flat top (mm).
-cone_dot_top_diameter  = 0.4; // [0.1:0.01:2]
+cone_dot_height        = 0.8; // [0.6:0.01:0.9]
+// Cone dots: diameter of the small flat top (mm). It must be smaller than the base.
+cone_dot_top_diameter  = 0.4; // [0.3:0.01:1.0]
 
 /* [Advanced - Braille plate lean and support fins] */
 // Angle between the braille plate and the bed in Angled mode (degrees). 75 to 90 reads best; 75 needs no slicer supports.
@@ -185,6 +187,8 @@ brim_width_mm = 2.0;          // [0:0.25:25]
 brim_thickness_mm = 0.2;      // [0.1:0.05:3]
 
 /* [Advanced - Warnings and rendering] */
+// Show problems as red text beside the sign in the preview. The text is never part of an export.
+show_warnings = "Yes";        // [Yes, No]
 // How smooth the rounded dot domes are. High is smoother but renders slower.
 render_quality = "Medium";    // [Low, Medium, High]
 // How many flat sides draw each dot's round outline, for both dot shapes. Higher is smoother and slower.
@@ -202,6 +206,7 @@ angled_on = (print_orientation == "Angled");
 fins_on = angled_on && ((support_fins == "Yes") || (support_fins == true));
 border_on = (add_border == "Yes");
 uppercase_on = (force_uppercase == "Yes");
+warnings_on = (show_warnings == "Yes");
 
 show_letter_plate  = (sign_part == "Both") || (sign_part == "Letter plate");
 show_braille_plate = (sign_part == "Both") || (sign_part == "Braille plate");
@@ -243,8 +248,37 @@ _braille_nonempty = [for (i = [0:_line_count-1]) if (len(_braille_lines[i]) > 0)
 text_rows    = len(_text_nonempty) == 0 ? 0 : _text_nonempty[len(_text_nonempty) - 1] + 1;
 braille_rows = len(_braille_nonempty) == 0 ? 0 : _braille_nonempty[len(_braille_nonempty) - 1] + 1;
 
-// Letter layout
+// Letter layout. letter_height_mm is the printed height of the capital I, the
+// letter ADA 703.2.5 measures. Liberation Sans draws its I at 0.9555 of the
+// text() size (measured: 15.288 mm at size 16), so text() gets the dial
+// divided by that ratio.
+LETTER_CAP_RATIO = 0.9555;
+_letter_size = letter_height_mm / LETTER_CAP_RATIO;
 text_line_pitch = letter_height_mm * letter_line_spacing_pct / 100;
+
+// [advance, ink left edge, ink right edge] per unit of text() size, chr(32) to chr(126),
+// Liberation Sans, from scripts/glyph_advances.json (scripts/measure_glyph_advances.py).
+GLYPH_METRICS = [
+    [0.38588, 0, 0], [0.38588, 0.12544, 0.25984], [0.49303, 0.05888, 0.43456], [0.77243, 0.00576, 0.76608], [0.77243, 0.01472, 0.75008],  // space ! " # $
+    [1.23495, 0.04928, 1.18592], [0.92638, 0.04864, 0.90496], [0.26516, 0.0704, 0.19584], [0.46251, 0.08576, 0.4544], [0.46251, 0.00768, 0.37696],  // % & ' ( )
+    [0.5405, 0.02176, 0.51904], [0.81109, 0.0672, 0.74304], [0.38588, 0.12416, 0.26112], [0.46251, 0.06144, 0.40128], [0.38588, 0.12672, 0.2592],  // * + , - .
+    [0.38588, 0, 0.38592], [0.77243, 0.05376, 0.71872], [0.77243, 0.1056, 0.70464], [0.77243, 0.06976, 0.70272], [0.77243, 0.05248, 0.71168],  // / 0 1 2 3
+    [0.77243, 0.03136, 0.73216], [0.77243, 0.05504, 0.71424], [0.77243, 0.0704, 0.71168], [0.77243, 0.07104, 0.70272], [0.77243, 0.06016, 0.71232],  // 4 5 6 7 8
+    [0.77243, 0.06464, 0.7072], [0.38588, 0.12672, 0.2592], [0.38588, 0.12416, 0.26112], [0.81109, 0.06848, 0.74368], [0.81109, 0.0672, 0.74304],  // 9 : ; < =
+    [0.81109, 0.06848, 0.74368], [0.77243, 0.05696, 0.72128], [1.40991, 0.1088, 1.29024], [0.92638, 0.00256, 0.92416], [0.92638, 0.11392, 0.85312],  // > ? @ A B
+    [1.00301, 0.0704, 0.9504], [1.00301, 0.11392, 0.93696], [0.92638, 0.11392, 0.8672], [0.84839, 0.11392, 0.79296], [1.08032, 0.06976, 0.97664],  // C D E F G
+    [1.00301, 0.11392, 0.89024], [0.38588, 0.128, 0.25792], [0.69445, 0.02112, 0.59136], [0.92638, 0.11392, 0.91072], [0.77243, 0.11392, 0.7264],  // H I J K L
+    [1.15696, 0.11392, 1.0432], [1.00301, 0.11392, 0.89024], [1.08032, 0.06528, 1.0144], [0.92638, 0.11392, 0.85312], [1.08032, 0.06528, 1.0144],  // M N O P Q
+    [1.00301, 0.11392, 0.93888], [0.92638, 0.06272, 0.86272], [0.84839, 0.03072, 0.81664], [1.00301, 0.10688, 0.896], [0.92638, 0.00576, 0.92032],  // R S T U V
+    [1.3109, 0.00576, 1.30624], [0.92638, 0.03072, 0.89728], [0.92638, 0.03008, 0.896], [0.84839, 0.04352, 0.80512], [0.38588, 0.09856, 0.37504],  // W X Y Z [
+    [0.38588, 0, 0.38592], [0.38588, 0.01024, 0.28736], [0.65172, 0.0064, 0.64512], [0.77243, -0.02112, 0.78848], [0.46251, 0.07168, 0.35968],  // \ ] ^ _ `
+    [0.77243, 0.05888, 0.77248], [0.77243, 0.08896, 0.71424], [0.69445, 0.05888, 0.65792], [0.77243, 0.05824, 0.68288], [0.77243, 0.05888, 0.71104],  // a b c d e
+    [0.38588, 0.0192, 0.38848], [0.77243, 0.05824, 0.68288], [0.77243, 0.096, 0.68224], [0.30857, 0.0928, 0.21504], [0.30857, -0.03392, 0.21504],  // f g h i j
+    [0.69445, 0.09344, 0.69696], [0.30857, 0.09344, 0.21568], [1.15696, 0.09216, 1.0656], [0.77243, 0.09216, 0.68224], [0.77243, 0.05824, 0.71424],  // k l m n o
+    [0.77243, 0.08896, 0.71424], [0.77243, 0.05824, 0.68416], [0.46251, 0.09216, 0.43968], [0.69445, 0.0384, 0.64448], [0.38588, 0.02048, 0.37568],  // p q r s t
+    [0.77243, 0.0896, 0.68032], [0.69445, 0.00448, 0.68992], [1.00301, -0.00256, 1.00672], [0.69445, 0.01536, 0.67968], [0.69445, 0.0032, 0.69184],  // u v w x y
+    [0.69445, 0.05568, 0.62528], [0.46387, 0.02304, 0.43968], [0.36079, 0.12352, 0.2368], [0.46387, 0.02304, 0.43904], [0.81109, 0.06208, 0.7488]  // z { | } ~
+];
 
 // Braille dot metrics
 dot_total_height = use_rounded_dots
@@ -257,38 +291,71 @@ braille_max_len = max([for (l = _braille_lines) len(l)]);
 braille_block_w = braille_max_len <= 1 ? 0 : (braille_max_len - 1) * braille_cell_spacing_mm;
 braille_block_h = braille_rows  <= 1 ? 0 : (braille_rows - 1) * braille_line_spacing_mm;
 
+// The sliders above hold the tactile dials to ADA 703.3, but a -D value or a
+// preset skips a slider and OpenSCAD does not check one, so these stop the
+// render instead of printing unreadable braille.
+assert(braille_clearance_mm >= 9.5, "braille_clearance_mm is below the ADA 703.3.2 minimum of 9.5 mm");
+assert(rounded_dot_base_diameter >= 1.5 && rounded_dot_base_diameter <= 1.6,
+       "rounded_dot_base_diameter must be 1.5 to 1.6 mm (ADA 703.3.1 dot base diameter)");
+assert(rounded_dot_dome_diameter >= 1.0 && rounded_dot_dome_diameter <= 1.6,
+       "rounded_dot_dome_diameter must be 1.0 to 1.6 mm");
+assert(rounded_dot_base_height >= 0.1 && rounded_dot_base_height <= 0.5,
+       "rounded_dot_base_height must be 0.1 to 0.5 mm");
+assert(rounded_dot_dome_height >= 0.2 && rounded_dot_dome_height <= 0.8,
+       "rounded_dot_dome_height must be 0.2 to 0.8 mm");
+assert(cone_dot_base_diameter >= 1.5 && cone_dot_base_diameter <= 1.6,
+       "cone_dot_base_diameter must be 1.5 to 1.6 mm (ADA 703.3.1 dot base diameter)");
+assert(cone_dot_height >= 0.6 && cone_dot_height <= 0.9,
+       "cone_dot_height must be 0.6 to 0.9 mm (ADA 703.3.1 dot height)");
+assert(cone_dot_top_diameter >= 0.3 && cone_dot_top_diameter <= 1.0,
+       "cone_dot_top_diameter must be 0.3 to 1.0 mm");
+assert(braille_dot_spacing_mm >= 2.3 && braille_dot_spacing_mm <= 2.5,
+       "braille_dot_spacing_mm must be 2.3 to 2.5 mm (ADA 703.3.1)");
+assert(braille_cell_spacing_mm >= 6.1 && braille_cell_spacing_mm <= 7.6,
+       "braille_cell_spacing_mm must be 6.1 to 7.6 mm (ADA 703.3.1)");
+assert(braille_line_spacing_mm >= 10.0 && braille_line_spacing_mm <= 10.2,
+       "braille_line_spacing_mm must be 10.0 to 10.2 mm (ADA 703.3.1)");
+assert(rounded_dot_base_height + rounded_dot_dome_height >= 0.6
+       && rounded_dot_base_height + rounded_dot_dome_height <= 0.9,
+       "rounded dot total height must be 0.6 to 0.9 mm (ADA 703.3.1 dot height)");
+assert(rounded_dot_dome_diameter <= rounded_dot_base_diameter,
+       "rounded_dot_dome_diameter must not exceed rounded_dot_base_diameter");
+assert(cone_dot_top_diameter < cone_dot_base_diameter,
+       "cone_dot_top_diameter must be smaller than cone_dot_base_diameter");
+
 // Effective sign size. In auto-fit mode (default) the plates grow so every
 // row of letters, braille dots, and the plate heights always fit.
-// Manual mode keeps the exact size set above. Uppercase Liberation Sans
-// advances average ~0.94 x size per character (measured with textmetrics).
+// Manual mode keeps the exact size set above. The letter plate pads its text
+// 4 mm inside the border; the braille plate pads its braille by
+// braille_clearance_mm (ADA 703.3.2 asks 9.5 mm from a raised border).
 auto_fit_on = (auto_fit == "Yes");
-_plate_pad = (border_on ? border_width_mm : 0) + 4;
+_border_inset = border_on ? border_width_mm : 0;
+_letter_pad  = _border_inset + 4;
+_braille_pad = _border_inset + braille_clearance_mm;
 _dot_base_d = (dot_shape == "Rounded")
     ? rounded_dot_base_diameter : cone_dot_base_diameter;
-CHAR_ADVANCE_FACTOR = 0.94;
 _est_text_w = text_rows == 0 ? 0
-    : max([for (l = _text_lines) len(display_text(l))])
-      * letter_height_mm * CHAR_ADVANCE_FACTOR * letter_spacing_factor;
+    : max([for (l = _text_lines) _text_line_width(display_text(l), letter_spacing_factor)])
+      * _letter_size;
 _braille_block_total_w = braille_max_len == 0 ? 0
     : braille_block_w + braille_dot_spacing_mm + _dot_base_d;
 sign_w = auto_fit_on
-    ? max(sign_width_mm, _est_text_w + 2 * _plate_pad,
-          _braille_block_total_w + 2 * _plate_pad)
+    ? max(sign_width_mm, _est_text_w + 2 * _letter_pad,
+          _braille_block_total_w + 2 * _braille_pad)
     : sign_width_mm;
 _letter_block_h = text_rows == 0 ? 0
     : (text_rows - 1) * text_line_pitch + letter_height_mm;
 letter_plate_h = (auto_fit_on && text_rows > 0)
-    ? max(letter_plate_height_mm, _letter_block_h + 2 * _plate_pad)
+    ? max(letter_plate_height_mm, _letter_block_h + 2 * _letter_pad)
     : letter_plate_height_mm;
 _braille_block_total_h = braille_rows == 0 ? 0
     : braille_block_h + 2 * braille_dot_spacing_mm + _dot_base_d;
 braille_plate_h = (auto_fit_on && braille_rows > 0)
-    ? max(braille_plate_height_mm, _braille_block_total_h + 2 * _plate_pad)
+    ? max(braille_plate_height_mm, _braille_block_total_h + 2 * _braille_pad)
     : braille_plate_height_mm;
 
 // Space actually available to content once the raised border is deducted.
 // The overflow diagnostics below compare against these.
-_border_inset    = border_on ? border_width_mm : 0;
 _inner_w         = sign_w - 2 * _border_inset;
 _letter_inner_h  = letter_plate_h - 2 * _border_inset;
 _braille_inner_h = braille_plate_h - 2 * _border_inset;
@@ -315,6 +382,29 @@ function to_upper(s) =
         (o >= 97 && o <= 122) ? o - 32 : o]);
 
 function display_text(s) = uppercase_on ? to_upper(s) : s;
+
+function _sum(v, i = 0) = i >= len(v) ? 0 : v[i] + _sum(v, i + 1);
+
+// A character's GLYPH_METRICS row; one outside the table gets an average width.
+function _glyph(c) =
+    let(o = ord(c))
+    (o >= 32 && o <= 126) ? GLYPH_METRICS[o - 32] : [0.94, 0, 0.94];
+
+// Width a line needs on the plate, per unit of text() size. text() centres
+// the line's advances (each times the spacing factor), not its ink, so the
+// ink can sit off centre: the line needs twice the ink's reach from the centre.
+function _text_line_width(s, k) =
+    let(n = len(s),
+        m = [for (i = [0 : 1 : n - 1]) _glyph(s[i])],
+        inked = [for (i = [0 : 1 : n - 1]) if (m[i][2] > m[i][1]) i])
+    len(inked) == 0 ? 0 :
+    let(first = inked[0],
+        last = inked[len(inked) - 1],
+        adv = [for (i = [0 : 1 : n - 1]) k * m[i][0]],
+        total = _sum(adv),
+        left = _sum([for (i = [0 : 1 : first - 1]) adv[i]]) + m[first][1],
+        right = _sum([for (i = [0 : 1 : last - 1]) adv[i]]) + m[last][2])
+    max(total - 2 * left, 2 * right - total);
 
 function is_braille_char(c) = (c >= 10240 && c <= 10495);
 function has_invalid_chars(str) =
@@ -435,7 +525,7 @@ module letter_plate() {
                     translate([0, y_line, plate_thickness_mm])
                         linear_extrude(height = letter_raise_mm)
                             text(display_text(_text_lines[i]),
-                                 size = letter_height_mm,
+                                 size = _letter_size,
                                  font = "Liberation Sans",
                                  spacing = letter_spacing_factor,
                                  halign = "center",
@@ -600,38 +690,113 @@ module braille_plate_angled() {
 // Each overflow warning reports the measured size against the space available,
 // matching the counted "TEXT TOO LONG: n/capacity" style the cylinder generator
 // uses. "Too tall" on its own leaves you guessing how much to add; the numbers
-// say it outright.
+// say it outright. Each condition is named once so the console lines here and
+// the preview text (PREVIEW WARNINGS) can never disagree.
+// Auto-fit sizes the braille plate to exactly the clearance; FIT_TOLERANCE keeps
+// floating-point rounding from reporting that exact fit as too close.
+FIT_TOLERANCE = 1e-6;
+_warn_text_tall    = text_rows > 0 && _letter_block_h > _letter_inner_h;
+_warn_braille_tall = braille_rows > 0 && _braille_block_total_h > _braille_inner_h;
+_warn_braille_wide = braille_max_len > 0 && _braille_block_total_w > _inner_w;
+_warn_close_tall   = braille_rows > 0 && !_warn_braille_tall
+    && _braille_block_total_h > _braille_inner_h - 2 * braille_clearance_mm + FIT_TOLERANCE;
+_warn_close_wide   = braille_max_len > 0 && !_warn_braille_wide
+    && _braille_block_total_w > _inner_w - 2 * braille_clearance_mm + FIT_TOLERANCE;
+_warn_text_wide    = _est_text_w > _inner_w;
+_bad_braille_lines = [for (i = [0 : _line_count - 1]) if (has_invalid_chars(_braille_lines[i])) i + 1];
+_short_letters     = text_rows > 0 && letter_height_mm < 16;
+
 echo(str("Braille sign: ", text_rows, " text line(s), ", braille_rows,
-         " braille line(s), ", sign_w, " mm wide, plates ",
-         letter_plate_h, " + ", braille_plate_h, " mm tall"));
-if (text_rows > 0 && _letter_block_h > _letter_inner_h)
+         " braille line(s), ", mm1(sign_w), " mm wide, plates ",
+         mm1(letter_plate_h), " + ", mm1(braille_plate_h), " mm tall"));
+if (text_rows > 0)
+    echo(str("Text width estimate: ", mm1(_est_text_w), " mm"));
+if (_warn_text_tall)
     echo(str("WARNING: TEXT TOO TALL: ", mm1(_letter_block_h), "/", mm1(_letter_inner_h),
              " mm. The raised text block is taller than the letter plate's usable height. ",
              "Turn on auto_fit, raise letter_plate_height_mm to at least ",
              mm1(_letter_block_h + 2 * _border_inset), ", or remove a line."));
-if (braille_rows > 0 && _braille_block_total_h > _braille_inner_h)
+if (_warn_braille_tall)
     echo(str("WARNING: BRAILLE TOO TALL: ", mm1(_braille_block_total_h), "/", mm1(_braille_inner_h),
              " mm. The braille block is taller than the braille plate's usable height. ",
              "Turn on auto_fit, raise braille_plate_height_mm to at least ",
              mm1(_braille_block_total_h + 2 * _border_inset), ", or remove a line."));
-if (braille_max_len > 0 && _braille_block_total_w > _inner_w)
+if (_warn_braille_wide)
     echo(str("WARNING: BRAILLE TOO WIDE: ", mm1(_braille_block_total_w), "/", mm1(_inner_w),
              " mm (longest line is ", braille_max_len, " cells). ",
              "Turn on auto_fit, raise sign_width_mm to at least ",
              mm1(_braille_block_total_w + 2 * _border_inset), ", or shorten the line."));
-if (_est_text_w > _inner_w)
+if (_warn_close_tall)
+    echo(str("WARNING: BRAILLE TOO CLOSE TO BORDER: ", mm1(_braille_block_total_h), "/",
+             mm1(_braille_inner_h - 2 * braille_clearance_mm), " mm. ADA 703.3.2 asks ",
+             braille_clearance_mm, " mm of clear space. ",
+             "Turn on auto_fit, raise braille_plate_height_mm to at least ",
+             mm1(_braille_block_total_h + 2 * _braille_pad), ", or remove a line."));
+if (_warn_close_wide)
+    echo(str("WARNING: BRAILLE TOO CLOSE TO BORDER: ", mm1(_braille_block_total_w), "/",
+             mm1(_inner_w - 2 * braille_clearance_mm), " mm (longest line is ",
+             braille_max_len, " cells). ADA 703.3.2 asks ", braille_clearance_mm,
+             " mm of clear space. Turn on auto_fit, raise sign_width_mm to at least ",
+             mm1(_braille_block_total_w + 2 * _braille_pad), ", or shorten the line."));
+if (_warn_text_wide)
     echo(str("WARNING: TEXT TOO WIDE: ", mm1(_est_text_w), "/", mm1(_inner_w),
              " mm (estimated from character advances, so treat it as approximate). ",
              "Turn on auto_fit, raise sign_width_mm to at least ",
              mm1(_est_text_w + 2 * _border_inset), ", or shorten the line."));
-for (i = [0:_line_count-1])
-    if (has_invalid_chars(_braille_lines[i]))
-        echo(str("WARNING: braille_line_", i + 1, " contains non-braille characters. Use Unicode braille (U+2800-U+28FF)."));
+for (n = _bad_braille_lines)
+    echo(str("WARNING: braille_line_", n, " contains non-braille characters. Use Unicode braille (U+2800-U+28FF)."));
 if (_sample_on)
     echo(str("NOTE: sample_sign is ", sample_sign, "; text_line_N and braille_line_N are ignored."));
-if (letter_height_mm < 15.9)
-    echo("NOTE: ADA 703.2.5 requires raised characters at least 15.9 mm (5/8 in) tall.");
+if (_short_letters)
+    echo("NOTE: letter_height_mm is under 16 mm (5/8 in); ADA 703.2.5 asks raised characters at least that tall, measured on the capital I.");
+if (text_rows > 0 && letter_raise_mm < 0.8)
+    echo("NOTE: letter_raise_mm is under 0.8 mm (1/32 in); ADA 703.2.1 asks raised characters at least that high.");
+if (text_rows > 1 && (letter_line_spacing_pct < 135 || letter_line_spacing_pct > 170))
+    echo("NOTE: letter_line_spacing_pct is outside 135 to 170; ADA 703.2.8 asks the baselines of raised letter lines 135 to 170 percent of the letter height apart.");
 echo("NOTE: ADA defaults are recommendations only - this tool does not guarantee compliance. Mount the braille plate at least 9.5 mm (3/8 in) below the raised text.");
+
+// =============================================================================
+// PREVIEW WARNINGS
+// =============================================================================
+// The problems above as text beside the sign in the preview (F5). The `%`
+// background modifier keeps it out of every render (F6) and export, so it can
+// never reach an STL; some OpenSCAD builds draw it gray instead of red.
+// MakerWorld shows neither this text nor the console.
+WARNING_TEXT_SIZE  = 5;
+WARNING_TEXT_DEPTH = 2;
+WARNING_STACK_GAP  = 8;
+
+// The lowest line sits 10 mm past the far (+Y) edge of whatever is shown.
+_warn_y = (show_letter_plate && show_braille_plate) ? plate_gap_mm / 2 + letter_plate_h + 10
+        : show_letter_plate ? letter_plate_h / 2 + 10
+        : angled_on ? bp_base_run / 2 + 10
+        : braille_plate_h / 2 + 10;
+
+_warn_slots = concat(
+    [for (n = _bad_braille_lines) [str("NOT BRAILLE IN LINE ", n), "red"]],
+    _warn_text_wide ? [["TEXT TOO WIDE", "red"]] : [],
+    _warn_text_tall ? [["TEXT TOO TALL", "red"]] : [],
+    _warn_braille_wide ? [["BRAILLE TOO WIDE", "red"]] : [],
+    _warn_braille_tall ? [["BRAILLE TOO TALL", "red"]] : [],
+    (_warn_close_tall || _warn_close_wide) ? [["BRAILLE TOO CLOSE TO BORDER", "red"]] : [],
+    _short_letters ? [["LETTERS UNDER 16 MM", "red"]] : [],
+    _sample_on ? [["SAMPLE SIGN IN USE", "orange"]] : []);
+
+// Slot k of n, stacked as lines of text so the first message is the top line
+// in a view from above.
+module warning_slot(k, n, msg, c = "red") {
+    translate([0, _warn_y + (n - 1 - k) * WARNING_STACK_GAP, plate_thickness_mm])
+        %color(c)
+            linear_extrude(height = WARNING_TEXT_DEPTH)
+                text(msg, size = WARNING_TEXT_SIZE, font = "Liberation Sans",
+                     halign = "center", valign = "center");
+}
+
+module warnings_3d() {
+    if (warnings_on)
+        for (k = [0 : 1 : len(_warn_slots) - 1])
+            warning_slot(k, len(_warn_slots), _warn_slots[k][0], _warn_slots[k][1]);
+}
 
 // =============================================================================
 // MAIN RENDERING
@@ -655,5 +820,7 @@ if (show_letter_plate && show_braille_plate) {
     if (angled_on) braille_plate_angled();
     else braille_plate_flat();
 }
+
+warnings_3d();
 
 // End of file
