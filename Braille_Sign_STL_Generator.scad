@@ -139,6 +139,8 @@ braille_cell_spacing_mm = 7.0; // [2:0.01:15]
 braille_line_spacing_mm = 10.0; // [5:0.01:25]
 // Center-to-center distance between the dots of one cell (mm). ADA 703.3.1 asks 2.3 to 2.5.
 braille_dot_spacing_mm = 2.5; // [1:0.01:5]
+// Clear space between the braille and the border rail or plate edge (mm). ADA 703.3.2 asks 9.5 mm (3/8 in) or more.
+braille_clearance_mm = 9.5;   // [9.5:0.5:20]
 
 /* [Advanced - Braille dot shape] */
 // A rounded dome dot, the ADA profile (Rounded), or a pointed dot with a flat top (Cone).
@@ -286,11 +288,17 @@ braille_max_len = max([for (l = _braille_lines) len(l)]);
 braille_block_w = braille_max_len <= 1 ? 0 : (braille_max_len - 1) * braille_cell_spacing_mm;
 braille_block_h = braille_rows  <= 1 ? 0 : (braille_rows - 1) * braille_line_spacing_mm;
 
+assert(braille_clearance_mm >= 9.5, "braille_clearance_mm is below the ADA 703.3.2 minimum of 9.5 mm");
+
 // Effective sign size. In auto-fit mode (default) the plates grow so every
 // row of letters, braille dots, and the plate heights always fit.
-// Manual mode keeps the exact size set above.
+// Manual mode keeps the exact size set above. The letter plate pads its text
+// 4 mm inside the border; the braille plate pads its braille by
+// braille_clearance_mm (ADA 703.3.2 asks 9.5 mm from a raised border).
 auto_fit_on = (auto_fit == "Yes");
-_plate_pad = (border_on ? border_width_mm : 0) + 4;
+_border_inset = border_on ? border_width_mm : 0;
+_letter_pad  = _border_inset + 4;
+_braille_pad = _border_inset + braille_clearance_mm;
 _dot_base_d = (dot_shape == "Rounded")
     ? rounded_dot_base_diameter : cone_dot_base_diameter;
 _est_text_w = text_rows == 0 ? 0
@@ -299,23 +307,22 @@ _est_text_w = text_rows == 0 ? 0
 _braille_block_total_w = braille_max_len == 0 ? 0
     : braille_block_w + braille_dot_spacing_mm + _dot_base_d;
 sign_w = auto_fit_on
-    ? max(sign_width_mm, _est_text_w + 2 * _plate_pad,
-          _braille_block_total_w + 2 * _plate_pad)
+    ? max(sign_width_mm, _est_text_w + 2 * _letter_pad,
+          _braille_block_total_w + 2 * _braille_pad)
     : sign_width_mm;
 _letter_block_h = text_rows == 0 ? 0
     : (text_rows - 1) * text_line_pitch + letter_height_mm;
 letter_plate_h = (auto_fit_on && text_rows > 0)
-    ? max(letter_plate_height_mm, _letter_block_h + 2 * _plate_pad)
+    ? max(letter_plate_height_mm, _letter_block_h + 2 * _letter_pad)
     : letter_plate_height_mm;
 _braille_block_total_h = braille_rows == 0 ? 0
     : braille_block_h + 2 * braille_dot_spacing_mm + _dot_base_d;
 braille_plate_h = (auto_fit_on && braille_rows > 0)
-    ? max(braille_plate_height_mm, _braille_block_total_h + 2 * _plate_pad)
+    ? max(braille_plate_height_mm, _braille_block_total_h + 2 * _braille_pad)
     : braille_plate_height_mm;
 
 // Space actually available to content once the raised border is deducted.
 // The overflow diagnostics below compare against these.
-_border_inset    = border_on ? border_width_mm : 0;
 _inner_w         = sign_w - 2 * _border_inset;
 _letter_inner_h  = letter_plate_h - 2 * _border_inset;
 _braille_inner_h = braille_plate_h - 2 * _border_inset;
@@ -671,6 +678,23 @@ if (braille_max_len > 0 && _braille_block_total_w > _inner_w)
              " mm (longest line is ", braille_max_len, " cells). ",
              "Turn on auto_fit, raise sign_width_mm to at least ",
              mm1(_braille_block_total_w + 2 * _border_inset), ", or shorten the line."));
+// Auto-fit sizes the braille plate to exactly the clearance; FIT_TOLERANCE keeps
+// floating-point rounding from reporting that exact fit as too close.
+FIT_TOLERANCE = 1e-6;
+if (braille_rows > 0 && _braille_block_total_h <= _braille_inner_h
+    && _braille_block_total_h > _braille_inner_h - 2 * braille_clearance_mm + FIT_TOLERANCE)
+    echo(str("WARNING: BRAILLE TOO CLOSE TO BORDER: ", mm1(_braille_block_total_h), "/",
+             mm1(_braille_inner_h - 2 * braille_clearance_mm), " mm. ADA 703.3.2 asks ",
+             braille_clearance_mm, " mm of clear space. ",
+             "Turn on auto_fit, raise braille_plate_height_mm to at least ",
+             mm1(_braille_block_total_h + 2 * _braille_pad), ", or remove a line."));
+if (braille_max_len > 0 && _braille_block_total_w <= _inner_w
+    && _braille_block_total_w > _inner_w - 2 * braille_clearance_mm + FIT_TOLERANCE)
+    echo(str("WARNING: BRAILLE TOO CLOSE TO BORDER: ", mm1(_braille_block_total_w), "/",
+             mm1(_inner_w - 2 * braille_clearance_mm), " mm (longest line is ",
+             braille_max_len, " cells). ADA 703.3.2 asks ", braille_clearance_mm,
+             " mm of clear space. Turn on auto_fit, raise sign_width_mm to at least ",
+             mm1(_braille_block_total_w + 2 * _braille_pad), ", or shorten the line."));
 if (_est_text_w > _inner_w)
     echo(str("WARNING: TEXT TOO WIDE: ", mm1(_est_text_w), "/", mm1(_inner_w),
              " mm (estimated from character advances, so treat it as approximate). ",

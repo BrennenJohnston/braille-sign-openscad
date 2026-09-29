@@ -8,6 +8,8 @@ figures the Customizer and the documents quote:
   703.2.5 measures;
 - the console's text width estimate, which auto-fit uses to size the plates,
   is within 2 % of the width the letters really print;
+- braille keeps the 9.5 mm of ADA 703.3.2 from the border rail and the plate
+  edge on a six-line sign;
 - the .scad's GLYPH_METRICS table is the one scripts/measure_glyph_advances.py
   measured (this one reads files only and runs without OpenSCAD).
 
@@ -28,6 +30,20 @@ from openscad_runner import OpenSCADNotFoundError, OpenSCADRunner
 
 # Letter tops sit at plate_thickness_mm 3 + letter_raise_mm 0.8 = 3.8 mm.
 LETTER_TOP_Z = 3.79
+
+# A six-line sign built from the liblouis sample data (braille is never typed).
+SIX_SAMPLES = ["Restroom", "Exit", "Stairs", "Room 101", "Restroom", "Exit"]
+
+
+def six_line_parameters():
+    samples = json.loads(
+        (PROJECT_ROOT / "scripts" / "sample_signs.json").read_text(encoding="utf-8")
+    )
+    params = {}
+    for i, name in enumerate(SIX_SAMPLES, start=1):
+        params[f"text_line_{i}"] = samples[name]["text"][0]
+        params[f"braille_line_{i}"] = samples[name]["braille"][0]
+    return params
 
 
 @pytest.fixture(scope="module")
@@ -99,6 +115,45 @@ def test_width_estimate(runner, tmp_path, wording):
     assert abs(estimate / width - 1) <= 0.02, (
         f"{wording}: the estimate is {estimate} mm but the letters print "
         f"{width:.2f} mm wide ({(estimate / width - 1) * 100:+.1f} %)"
+    )
+
+
+@pytest.mark.requires_openscad
+def test_braille_clearance_six_lines(runner, tmp_path):
+    """
+    On a six-line sign the braille keeps 9.5 mm (ADA 703.3.2) from the
+    bottom border rail and from the top edge of the braille plate. Measured
+    where each dot meets the face, its widest point: vertices above the face
+    start at the dot base's narrower top ring and would read about 0.1 mm
+    generous.
+    """
+    mesh, _ = render(
+        runner,
+        tmp_path,
+        "six_braille_flat",
+        {
+            "sign_part": "Braille plate",
+            "print_orientation": "Flat",
+            "plate_thickness_mm": 3,
+            "border_width_mm": 2,
+            **six_line_parameters(),
+        },
+    )
+    half_w, half_h = mesh.bounds[1][0], mesh.bounds[1][1]
+    v = mesh.vertices
+    rail_edge = -half_h + 2
+    ring = v[
+        (abs(v[:, 2] - 3.0) < 0.001)
+        & (abs(v[:, 0]) < half_w - 2 - 0.01)
+        & (v[:, 1] > rail_edge + 0.01)
+        & (v[:, 1] < half_h - 0.01)
+    ]
+    assert len(ring), "no dot outlines found on the braille face"
+    to_rail = ring[:, 1].min() - rail_edge
+    to_edge = half_h - ring[:, 1].max()
+    assert to_rail >= 9.5 and to_edge >= 9.5, (
+        f"the braille sits {to_rail:.3f} mm from the bottom rail and "
+        f"{to_edge:.3f} mm from the top edge; ADA 703.3.2 asks 9.5 mm"
     )
 
 
