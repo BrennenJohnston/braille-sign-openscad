@@ -85,10 +85,10 @@ class TestSignStructure:
         Every row of raised letters needs a matching braille row, or the two
         plates say different things.
         """
-        letters = set(re.findall(r'^sign_text_(\d+)\s*=\s*"', scad_content, re.MULTILINE))
-        braille = set(re.findall(r'^Line_(\d+)\s*=\s*"', scad_content, re.MULTILINE))
-        assert letters == braille, (
-            "sign_text_N and Line_N must come in matching pairs; letters="
+        letters = set(re.findall(r'^text_line_(\d+)\s*=\s*"', scad_content, re.MULTILINE))
+        braille = set(re.findall(r'^braille_line_(\d+)\s*=\s*"', scad_content, re.MULTILINE))
+        assert letters and letters == braille, (
+            "text_line_N and braille_line_N must come in matching pairs; letters="
             f"{sorted(letters)}, braille={sorted(braille)}"
         )
 
@@ -103,6 +103,44 @@ class TestSignStructure:
         assert "Liberation Sans" in match.group(1), (
             f"font must be pinned to Liberation Sans, got '{match.group(1)}'"
         )
+
+
+class TestCustomizerLayout:
+    """The Customizer reads top to bottom: four Steps, then Advanced tabs."""
+
+    def test_every_tab_is_a_step_or_advanced(self, scad_content):
+        """
+        A beginner fills in Step 1 to Step 4 and stops; every other dial sits
+        under a tab whose name starts with "Advanced - " so nobody has to
+        guess which tabs they may skip.
+        """
+        tabs = re.findall(r"^/\*\s*\[([^\]]+)\]\s*\*/", scad_content, re.MULTILINE)
+        assert tabs, "no Customizer tab markers found"
+        bad = [
+            t for t in tabs
+            if not re.match(r"^Step [1-4] - .+$", t)
+            and not re.match(r"^Advanced - .+$", t)
+            and t != "Hidden"
+        ]
+        assert not bad, (
+            "every tab must be named 'Step N - ...', 'Advanced - ...' or "
+            f"'Hidden'; these are not: {bad}"
+        )
+
+    def test_no_parentheses_in_dropdown_labels(self, scad_content):
+        """
+        The Customizer fails to parse a dropdown option that contains a
+        parenthesis and silently falls back to the default (MakerWorld's
+        maker inherits this), so option labels must never contain one.
+        """
+        bad = []
+        for match in re.finditer(
+            r'^(\w+)\s*=\s*"[^"]*"\s*;\s*//\s*\[([^\]]+)\]', scad_content, re.MULTILINE
+        ):
+            for option in match.group(2).split(","):
+                if "(" in option or ")" in option:
+                    bad.append(f"{match.group(1)}: {option.strip()}")
+        assert not bad, f"dropdown options must not contain parentheses: {bad}"
 
 
 if __name__ == "__main__":

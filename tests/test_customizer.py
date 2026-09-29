@@ -170,7 +170,7 @@ class TestPresetsFile:
         email_marker = "\u2808\u2801"  # ⠈⠁ = UEB "@a..." as in name@...
         for set_name, params in presets["parameterSets"].items():
             for key, value in params.items():
-                if key.startswith("Line_") and email_marker in value:
+                if key.startswith("braille_line_") and email_marker in value:
                     pytest.fail(
                         f"Preset '{set_name}' {key} looks like it contains an "
                         "email address in braille. Shipped presets must use "

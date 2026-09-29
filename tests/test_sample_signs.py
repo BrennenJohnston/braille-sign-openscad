@@ -11,8 +11,9 @@ License: PolyForm Noncommercial 1.0.0
 """
 
 import json
+import re
 
-from conftest import PROJECT_ROOT
+from conftest import PROJECT_ROOT, SCAD_FILE
 
 SAMPLES_FILE = PROJECT_ROOT / "scripts" / "sample_signs.json"
 
@@ -29,6 +30,20 @@ MAX_CELLS = 30
 def load_samples():
     assert SAMPLES_FILE.exists(), f"sample data not found: {SAMPLES_FILE}"
     return json.loads(SAMPLES_FILE.read_text(encoding="utf-8"))
+
+
+def scad_constant(name):
+    """The body of a top-level list constant in the .scad, between its [ and ];."""
+    src = SCAD_FILE.read_text(encoding="utf-8")
+    match = re.search(rf"^{name}\s*=\s*\[(.*?)\];", src, re.MULTILINE | re.DOTALL)
+    assert match, f"{name} not found in {SCAD_FILE.name}"
+    return match.group(1)
+
+
+def scad_rows(name):
+    """A list-of-string-lists constant in the .scad, as Python lists."""
+    return [re.findall(r'"([^"]*)"', row)
+            for row in re.findall(r"\[([^\[\]]*)\]", scad_constant(name))]
 
 
 def test_sample_file_parses():
@@ -64,3 +79,34 @@ def test_braille_is_unicode_braille_only():
             assert len(line) <= MAX_CELLS, (
                 f"{name}: braille line is {len(line)} cells; the limit is {MAX_CELLS}"
             )
+
+
+def test_sample_dropdown_offers_type_my_own_then_every_sample():
+    """
+    The dropdown, the .scad tables and the JSON must name the same samples
+    in the same order, and the first render stays the typed-in sign.
+    """
+    src = SCAD_FILE.read_text(encoding="utf-8")
+    match = re.search(
+        r'^sample_sign\s*=\s*"([^"]+)"\s*;\s*//\s*\[([^\]]+)\]', src, re.MULTILINE
+    )
+    assert match, "sample_sign dropdown declaration not found"
+    assert match.group(1) == "Type my own", "sample_sign must default to Type my own"
+    options = [opt.strip() for opt in match.group(2).split(",")]
+    assert options == ["Type my own", *SAMPLE_NAMES], f"sample_sign offers {options}"
+
+
+def test_scad_sample_tables_match_the_json():
+    """
+    The .scad's sample tables are copied from scripts/sample_signs.json and
+    padded to six lines; a hand edit on either side shows up here.
+    """
+    samples = load_samples()
+    names = re.findall(r'"([^"]*)"', scad_constant("SAMPLE_NAMES"))
+    assert names == list(samples), f"SAMPLE_NAMES is {names}"
+
+    def padded(lines):
+        return lines + [""] * (MAX_ROWS - len(lines))
+
+    assert scad_rows("SAMPLE_TEXT") == [padded(s["text"]) for s in samples.values()]
+    assert scad_rows("SAMPLE_BRAILLE") == [padded(s["braille"]) for s in samples.values()]

@@ -425,7 +425,7 @@ class OpenSCADRunner:
             value: Parameter value
 
         Returns:
-            Formatted parameter string (e.g., 'Line_1="⠓⠑⠇⠇⠕"')
+            Formatted parameter string (e.g., 'braille_line_1="⠓⠑⠇⠇⠕"')
         """
         if isinstance(value, str):
             # Escape quotes and wrap in quotes
