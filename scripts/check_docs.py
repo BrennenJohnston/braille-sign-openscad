@@ -59,9 +59,8 @@ RETIRED = (r"sign_text_\w*", r"Line_(?:[1-6]|N)", "char_height_mm", "line_spacin
 # (file, H2 title): the one section where the retired names belong.
 RETIRED_ALLOWED_SECTIONS = {("docs/guides/full-guide.md", "Old names")}
 # Files a later phase rewrites: their findings print with the phase's tag and do
-# not fail the gate. The MakerWorld pair still names the old dials until D1, and
-# README.md until C6.
-ALLOW_UNTIL_D1 = {"docs/MAKERWORLD_LISTING.md", "docs/MAKERWORLD_QUICK_START.md"}
+# not fail the gate.
+ALLOW_UNTIL_D1: set = set()
 ALLOW_UNTIL_C6: set = set()
 COMPLIANCE = ("wcag compliant", "ada compliant", "fully accessible")
 ALT_PREFIXES = ("image of", "photo of", "picture of")
