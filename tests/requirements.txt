@@ -1,4 +1,4 @@
-# Python dependencies for the Braille Wedge Card test suite
+# Python dependencies for the Braille Sign STL Generator test suite
 #
 # Installation: pip install -r tests/requirements.txt
 
