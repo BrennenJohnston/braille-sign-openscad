@@ -790,13 +790,15 @@ rest only read files.
   the shipped Restroom letter plate still matches a fresh render.
 - `tests/test_full_guide_covers_every_dial.py`: this guide names every dial,
   quotes every warning and note, and matches the sample data.
+- `tests/test_docs_gate.py`: the README and every page under `docs/` meet the
+  documentation rules that `scripts/check_docs.py` checks.
 
 `scripts/scad-check.ps1` renders the default sign with strict warnings and
 prints `CHECK PASSED` or `CHECK FAILED`. `scripts/README.md` lists the other
 scripts. The continuous integration workflow, `.github/workflows/ci.yml`,
-runs on every pull request: a lint check, then `tests/test_customizer.py` and
-`tests/test_source_guards.py`, then `tests/test_render_smoke.py` with the
-OpenSCAD nightly. Run the other test files yourself before you open a pull
+runs on every pull request: a lint check, then every test that needs no
+OpenSCAD, then `tests/test_render_smoke.py` with the OpenSCAD nightly. Run the
+other tests marked `requires_openscad` yourself before you open a pull
 request.
 
 ## What the generator does not do
