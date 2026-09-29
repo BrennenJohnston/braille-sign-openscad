@@ -62,7 +62,7 @@ RETIRED_ALLOWED_SECTIONS = {("docs/guides/full-guide.md", "Old names")}
 # not fail the gate. The MakerWorld pair still names the old dials until D1, and
 # README.md until C6.
 ALLOW_UNTIL_D1 = {"docs/MAKERWORLD_LISTING.md", "docs/MAKERWORLD_QUICK_START.md"}
-ALLOW_UNTIL_C6 = {"README.md"}
+ALLOW_UNTIL_C6: set = set()
 COMPLIANCE = ("wcag compliant", "ada compliant", "fully accessible")
 ALT_PREFIXES = ("image of", "photo of", "picture of")
 ALLOW = re.compile(r"<!--\s*docs-gate:\s*allow\s+([^>]+?)\s*-->", re.I)
